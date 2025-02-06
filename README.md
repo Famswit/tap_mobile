@@ -29,38 +29,38 @@ A React.js project featuring a modern Dashboard system which contains different 
 ## 📸 Screenshots
 
 ### **Login & Authentication**
-![Login Page](public/screenshots/LoginPage.png)  
-![2FA Request OTP](public/screenshots/2FARequestOtpPage.png)  
-![2FA Verify OTP](public/screenshots/2FAVerifyOtpPage.png)  
-![Forgot Password](public/screenshots/ForgetPasswordPage.png)  
-![Confirm Password](public/screenshots/ConfirmPasswordPage.png)  
-![Reset Password](public/screenshots/ResetPasswordPage.png)  
+![Login Page](public/screenshots/login//LoginPage.png)  
+![2FA Request OTP](public/screenshots/login/2FARequestOtpPage.png)  
+![2FA Verify OTP](public/screenshots/login/2FAVerifyOtpPage.png)  
+![Forgot Password](public/screenshots/login/ForgetPasswordPage.png)  
+![Confirm Password](public/screenshots/login/ConfirmPasswordPage.png)  
+![Reset Password](public/screenshots/login/ResetPasswordPage.png)  
 
 ### **Dashboard**
-![Dashboard Page](public/screenshots/DashboardPage.png)  
+![Dashboard Page](public/screenshots/Dashboard/DashboardPage.png)  
 
 ### **Business Management**
-![Business Page](public/screenshots/BusinessPage.png)  
-![Add Business](public/screenshots/AddBusinessPage.png)  
-![Business Transaction Details](public/screenshots/BusinessTransactionDetailsPage.png)  
-![Generate Business API Key](public/screenshots/GenerateBusinessApiKeyPage.png)  
+![Business Page](public/screenshots/Business/BusinessPage.png)  
+![Add Business](public/screenshots/Business/AddBusinessPage.png)  
+![Business Transaction Details](public/screenshots/Business/BusinessTransactionDetailsPage.png)  
+![Generate Business API Key](public/screenshots/Business/GenerateBusinessApiKeyPage.png)  
 
 ### **Administration**
-![Admin Teammate](public/screenshots/AdminTeammatePage.png)  
-![Roles & Permissions](public/screenshots/AdminRoles&PermissionPage.png)  
-![Teammate Summary Detail](public/screenshots/AdminTeammateSummaryDetailPage.png)  
-![Invite Teammate](public/screenshots/AdminInviteTeammatePage.png)  
-![Create Role](public/screenshots/AdminCreateRole.png)  
+![Admin Teammate](public/screenshots/Admin/AdminTeammatePage.png)  
+![Roles & Permissions](public/screenshots/Admin/AdminRoles&PermissionPage.png)  
+![Teammate Summary Detail](public/screenshots/Admin/AdminTeammateSummaryDetailPage.png)  
+![Invite Teammate](public/screenshots/Admin/AdminInviteTeammatePage.png)  
+![Create Role](public/screenshots/Admin/AdminCreateRole.png)  
 
 ### **Activity Log**
-![Activity Log](public/screenshots/ActivityLogPage.png)  
+![Activity Log](public/screenshots/ActivityLog/ActivityLogPage.png)  
 
 ### **Settings**
-![Profile Info Settings](public/screenshots/ProfileInfoSettingsPage.png)  
-![Change Password](public/screenshots/ChangePasswordSettingsPage.png)  
+![Profile Info Settings](public/screenshots/Settings/ProfileInfoSettingsPage.png)  
+![Change Password](public/screenshots/Settings/ChangePasswordSettingsPage.png)  
 
 ### **Logout**
-![Logout Page](public/screenshots/LogoutPage.png)  
+![Logout Page](public/screenshots/logout/LogoutPage.png)  
 
 
 ## 📂 Project Setup  
