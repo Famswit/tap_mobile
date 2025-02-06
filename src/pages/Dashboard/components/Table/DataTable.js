@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -6,259 +6,148 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
 import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
-
-import { useState } from 'react';
-import { useEffect } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 import TransactDetails from './TransactDetails';
 import { useGetTransactions } from 'api/transactions';
 
+const itemsPerPage = 4;
 
-
-
-const itemPerPage = 5
-
-function data(id, businessName, amount, transId, date, protein) {
-  return {
-    id,
-    businessName,
-    amount,
-    transId,
-    date,
-    protein,
-  };
-}
-
-
-
-
-const headCells = [
-  {
-    id: 'name',
-    numeric: false,
-    disablePadding: true,
-    label: 'BUSINESS NAME',
-  },
-  {
-    id: 'calories',
-    numeric: true,
-    disablePadding: false,
-    label: 'TOTAL AMOUNT',
-  },
-  {
-    id: 'fat',
-    numeric: true,
-    disablePadding: false,
-    label: 'TRANSACTION ID',
-  },
-  {
-    id: 'carbs',
-    numeric: true,
-    disablePadding: false,
-    label: 'DATES & TIME',
-  },
-  {
-    id: 'protein',
-    numeric: true,
-    disablePadding: false,
-    label: '',
-  },
-];
-
-function EnhancedTableHead(props) {
-  const { onSelectAllClick, numSelected, rowCount,  } =
-    props;
- 
-  const [tableData, setTableData]=  useState([]);
-
- 
-
-
-  return (
-    <TableHead>
-      <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              'aria-label': 'select all desserts',
-            }}
-          />
-        </TableCell>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
-          >
-            <TableSortLabel
-            > 
-            <Typography variant='h4'>
-              {headCell.label}
-              </Typography>
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
-
-
-
-const numberOfPage = Math.ceil(data.length / itemPerPage)
-const pageIndex = Array.from({length : numberOfPage}, (_, idx) => idx+1)
-
-
-export default function DashboardTable(props) {
+export default function DashboardTable() {
   const { data, isLoading, isError } = useGetTransactions();
-  const transaction = data?.data?.transactions || [];
-  console.log(data);
-
-  
+  const transactions = data?.data?.transactions || [];
+  console.log("API call response:", data);
   const [currentPage, setCurrentPage] = useState(0);
-  const row = transaction.slice(currentPage * itemPerPage, currentPage + 1 * itemPerPage);
+  const totalPages = Math.ceil(transactions.length / itemsPerPage);
+  console.log("Transactions:", transactions);
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  }
- 
-
-  const [selected, setSelected] = React.useState([]);
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelected = transaction.map((n) => n.id);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
+  // Function to handle page navigation
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < totalPages) setCurrentPage(newPage);
   };
 
-  const isSelected = (id) => selected.indexOf(id) !== -1; 
+  // Data for the current page
+  const currentData = transactions.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+  console.log("Current page data:", currentData);
 
-  
-  const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+  // Define visible page numbers
+  const visiblePages = [];
+  for (let i = Math.max(0, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+    visiblePages.push(i);
+  }
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error fetching data</div>;
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px', marginLeft:"-200px" }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
+  // if (isError) {
+  //   return (
+  //     <Alert severity="error" sx={{ width:"95%", textAlign: 'center', marginTop: '20px' }}>
+  //       Error fetching transactions. Please try again later.
+  //     </Alert>
+  //   );
+  // }
 
+  // if (transactions.length === 0) {
+  //   console.error('No transactions found');
+  //   return (
+  //     <Typography variant="h6" sx={{ textAlign: 'center', marginTop: '20px' }}>
+  //       No transactions available.
+  //     </Typography>
+  //   );
+  // }
 
   return (
-    <Box sx={{ width: '95%', marginTop:'50px' }}>
-      <Box sx={{ width: '100%', mb: 2 }}>
-        <TableContainer>
-          <Table>
-            <EnhancedTableHead
-              numSelected={selected.length}
-              onSelectAllClick={handleSelectAllClick}
-              rowCount={transaction.length}
-            />
-            <TableBody>
-              {transaction.map((row, index) => {
-                const isItemSelected = isSelected(row.id);
-                const labelId = `enhanced-table-checkbox-${index}`;
+    <Box sx={{ width: '95%', marginTop: '50px' }}>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell padding="checkbox">
+                <Checkbox />
+              </TableCell>
+              <TableCell>BUSINESS NAME</TableCell>
+              <TableCell align="right">TOTAL AMOUNT</TableCell>
+              <TableCell align="right">TRANSACTION ID</TableCell>
+              <TableCell align="right">DATES & TIME</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {currentData.map((row) => (
+              <TableRow key={row.id || Math.random()}>
+                <TableCell padding="checkbox">
+                  <Checkbox />
+                </TableCell>
+                <TableCell>{row.businessName || "N/A"}</TableCell>
+                <TableCell align="right">{row.amount || 0}</TableCell>
+                <TableCell align="right">{row.transId || "N/A"}</TableCell>
+                <TableCell align="right">{row.createdOn || "N/A"}</TableCell>
+                <TableCell align="right"><TransactDetails /></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-                return (
-                  <TableRow
-                    hover
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <TableCell padding="checkbox">
-                    <Checkbox {...label}
-                    
-                    />
-
-                    </TableCell>
-                    <TableCell
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                    > <Typography variant='h5'>
-                      {row.businessName}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right"><Typography variant='h5'>{row.amount}</Typography></TableCell>
-                    <TableCell align="right"><Typography variant='h5'>{row.transId}</Typography></TableCell>
-                    <TableCell align="right"><Typography variant='h5'>{row.createdOn}</Typography></TableCell>
-                    <TableCell align="right"><TransactDetails /></TableCell>
-                  </TableRow>
-                );
-              })}
-              
-            </TableBody>
-            
-          </Table>
-
-          <div className="space-x-2">
-          {transaction.map((row) => (
-            <rows key={row.name} row={row} />
-          ))}
-            <Box sx={{display:'flex', gap:'50px'}}>
-            <Box sx={{width:'270%', display:'flex', justifyContent:'space-between',
-        alignItems:'center', marginLeft:'50px', padding:'20px 0'}}>
-        <Typography variant='h5'>
-          {' '}
-            {currentPage + 1}-{itemPerPage} of {transaction.length}
-          {' '}
+      {/* Pagination Controls */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px' }}>
+        <Typography variant="h6">
+          {`${currentPage * itemsPerPage + 1}-${Math.min((currentPage + 1) * itemsPerPage, transactions.length)} of ${transactions.length}`}
         </Typography>
-        <Box sx={{display:'flex', gap:'5px'}}>
-          <Typography variant='h5' sx={{padding:' 8px 20px', cursor:'pointer',
-          "&:hover" :{
-            background:'var(--Neutral-Divider, #F2F4F4)',
-            borderRadius: '6px'
-          }
-        }}
-          disabled={currentPage < 1}
-          onClick={() => handlePageChange(currentPage - 1)}>Prev</Typography>
-          
-          {pageIndex.slice(
-            Math.max(0, currentPage -2),
-            Math.min(numberOfPage, currentPage + 1)
-          )
-          .map((page) => (
-            <Typography variant='h4' sx={{background: 'var(--Neutral-Divider, #F2F4F4)',
-            borderRadius: '6px', padding:' 8px 20px', cursor:'pointer',
-              "&:hover":{
-                background: 'var(--Neutral-Divider, #F2F4F4)',              }
+
+        <Box sx={{ display: 'flex', gap: '10px' }}>
+          <Typography
+            variant="h6"
+            sx={{
+              padding: '8px 20px',
+              cursor: currentPage > 0 ? 'pointer' : 'not-allowed',
+              background: currentPage > 0 ? 'none' : '#f2f2f2',
+              borderRadius: '6px',
+              "&:hover": { background: currentPage > 0 ? '#F2F4F4' : 'none' },
             }}
-            key={page}
-            onClick={() => handlePageChange(page - 1)}
-            className={page === currentPage + 1 ? "active" : ""}>
-           Page {page}
+            onClick={() => handlePageChange(currentPage - 1)}
+          >
+            Prev
+          </Typography>
+
+          {visiblePages.map((page) => (
+            <Typography
+              key={page}
+              variant="h6"
+              sx={{
+                padding: '8px 20px',
+                cursor: 'pointer',
+                background: currentPage === page ? '#E0E0E0' : 'none',
+                borderRadius: '6px',
+                "&:hover": { background: '#F2F4F4' },
+              }}
+              onClick={() => handlePageChange(page)}
+            >
+              {page + 1}
             </Typography>
-          ))
-        }
-        
-          
-          <Typography 
-          variant='h5' sx={{padding:' 8px 20px', cursor:'pointer',
-          "&:hover" :{
-            background:'var(--Neutral-Divider, #F2F4F4)',
-            borderRadius: '6px'
-          } }}
-          disabled={currentPage > numberOfPage}
-           onClick={() => handlePageChange(currentPage + 1)}>Next</Typography>
-           </Box>
+          ))}
+
+          <Typography
+            variant="h6"
+            sx={{
+              padding: '8px 20px',
+              cursor: currentPage < totalPages - 1 ? 'pointer' : 'not-allowed',
+              background: currentPage < totalPages - 1 ? 'none' : '#f2f2f2',
+              borderRadius: '6px',
+              "&:hover": { background: currentPage < totalPages - 1 ? '#F2F4F4' : 'none' },
+            }}
+            onClick={() => handlePageChange(currentPage + 1)}
+          >
+            Next
+          </Typography>
         </Box>
-            </Box>
-          </div>
-        </TableContainer>
-        
       </Box>
-     
     </Box>
   );
 }

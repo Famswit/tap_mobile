@@ -1,25 +1,12 @@
-import * as React from 'react';
-import { Checkbox, Typography, Button, Box } from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Modal } from 'components/Modal';
-import { TextInput } from 'components/TextInput';
-import { useCreateRole } from 'api/roles';
-import { useSnackbar } from "notistack";
+import React from "react";
+import { Checkbox, Typography, Button, Box } from "@mui/material";
+import { Modal } from "components/Modal";
+import { TextInput } from "components/TextInput";
 import { useFormik } from "formik";
-import { createRoleValidation } from 'schema/createRoleValidation';
+import { createRoleValidation } from "schema/createRoleValidation";
 
 export default function CreateRole({ onAddRole }) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
-  const [open, setOpen] = React.useState(Boolean(location.state?.createRole));
-  const { mutate, isPending } = useCreateRole();
-
-  React.useEffect(() => {
-    if (location.state?.createRole) {
-      navigate(location.pathname, { replace: true });
-    }
-  }, [location, navigate]);
+  const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -41,43 +28,48 @@ export default function CreateRole({ onAddRole }) {
     },
     validationSchema: createRoleValidation,
     onSubmit: (values) => {
-      mutate(
-        { data: values },
-        {
-          onError: (err) => {
-            console.log({ err });
-            enqueueSnackbar("Role creation failed", { variant: "error" });
-          },
-          onSuccess: (res) => {
-            if (res.status !== "error") {
-              enqueueSnackbar("Role created successfully", { variant: "success" });
+      // Collect selected permissions as an array of labels
+      const selectedPermissions = Object.entries(values)
+        .filter(([key, value]) => key.startsWith("can") && value)
+        .map(([key]) => key);
 
-              onAddRole({
-                name: values.roleName,
-                lastModified: new Date().toLocaleString(),
-                avatar: "OP",
-              });
-              handleClose();
-            } else {
-              enqueueSnackbar(res.message, { variant: "error" });
-            }
-          },
-        }
-      );
+      // Pass role data back to the parent
+      onAddRole({
+        name: values.roleName,
+        permissions: selectedPermissions,
+        avatar: values.roleName.charAt(0).toUpperCase(), // First letter of roleName
+        lastModified: new Date().toLocaleString(),
+      });
+      handleClose();
     },
   });
 
-  const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+  const permissions = [
+    { name: "canViewTransaction", label: "Can view transaction" },
+    { name: "canExportTransaction", label: "Can export transaction" },
+    { name: "canViewBusinesses", label: "Can view businesses" },
+    { name: "canGenerateApiKey", label: "Can generate API key" },
+    { name: "canViewWithdrawalDetails", label: "Can view withdrawal details" },
+    { name: "canAddNewBusinesses", label: "Can add new businesses" },
+    { name: "canExportBusinesses", label: "Can export businesses" },
+    { name: "canInviteNewMember", label: "Can invite new member" },
+    { name: "canRemoveExistingMember", label: "Can remove existing member" },
+    { name: "canCreateRole", label: "Can create role" },
+    { name: "canChangeRole", label: "Can change role" },
+  ];
 
   return (
     <div>
-      <Button onClick={handleOpen} sx={{ height: '48px', marginTop: '30px', textTransform: 'capitalize' }} variant="contained">
+      <Button onClick={handleOpen} variant="contained" sx={{ textTransform: "capitalize", marginTop: "30px" }}>
         Create custom role
       </Button>
 
       <Modal open={open} handleClose={handleClose}>
-        <Box sx={{ width: '412px', height: '650px', overflow: 'auto' }}>
-          <Typography variant='h2' sx={{ textAlign: 'center', fontStyle: 'normal' }}>Create role</Typography>
+        <Box sx={{ width: "412px", height: "650px", overflow: "auto" }}>
+          <Typography variant="h2" sx={{ textAlign: "center" }}>
+            Create role
+          </Typography>
+
           <TextInput
             label="What do you want to call this role?"
             placeholder="Customer support"
@@ -87,40 +79,29 @@ export default function CreateRole({ onAddRole }) {
             onBlur={formik.handleBlur}
           />
           {formik.errors.roleName && formik.touched.roleName && (
-            <p style={{ color: "red" }}>{formik.errors.roleName}</p>
+            <Typography color="error">{formik.errors.roleName}</Typography>
           )}
 
           <Box>
-            <Typography variant='h4' sx={{ fontStyle: 'normal', paddingTop: '20px', color: '#BABABA' }}>Permissions</Typography>
-            {[
-              { name: 'canViewTransaction', label: 'Can view transaction' },
-              { name: 'canExportTransaction', label: 'Can export transaction' },
-              { name: 'canViewBusinesses', label: 'Can view businesses' },
-              { name: 'canGenerateApiKey', label: 'Can generate API key' },
-              { name: 'canViewWithdrawalDetails', label: 'Can view withdrawal details' },
-              { name: 'canAddNewBusinesses', label: 'Can add new businesses' },
-              { name: 'canExportBusinesses', label: 'Can export businesses' },
-              { name: 'canInviteNewMember', label: 'Can invite new member' },
-              { name: 'canRemoveExistingMember', label: 'Can remove existing member' },
-              { name: 'canCreateRole', label: 'Can create role' },
-              { name: 'canChangeRole', label: 'Can change role' }
-            ].map((permission) => (
-              <Box key={permission.name} sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="h4" sx={{ paddingTop: "20px", color: "#BABABA" }}>
+              Permissions
+            </Typography>
+            {permissions.map((permission) => (
+              <Box key={permission.name} sx={{ display: "flex", alignItems: "center" }}>
                 <Checkbox
-                  {...label}
                   name={permission.name}
                   checked={formik.values[permission.name]}
                   onChange={formik.handleChange}
                 />
-                <Typography variant='h5' sx={{ textAlign: 'start', fontStyle: 'normal' }}>{permission.label}</Typography>
+                <Typography variant="h5">{permission.label}</Typography>
               </Box>
             ))}
 
             <Button
-              sx={{ width: '100%', marginTop: '15px', textTransform: 'capitalize', padding: '10px' }}
               variant="contained"
+              fullWidth
               onClick={formik.handleSubmit}
-              disabled={isPending}
+              sx={{ marginTop: "20px", textTransform: "capitalize" }}
             >
               Create Role
             </Button>

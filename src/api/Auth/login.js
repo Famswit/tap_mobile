@@ -1,11 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 
+const API_BASE_URL = process.env.base_url;
+
 export const useLoginUser = (options = {}) => {
   return useMutation({
     ...options,
     mutationFn: (data) => {
       return fetch(
-        "https://settlement-staging.azurewebsites.net/api/v1/app/account/login",
+        `${API_BASE_URL}/account/login`,
         {
           method: "POST",
           headers: {

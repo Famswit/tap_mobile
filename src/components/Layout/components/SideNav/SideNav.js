@@ -8,7 +8,7 @@ import { SettingsIcon } from "assets/Icons/SettingsIcon";
 import { TrasactionIcon } from "assets/Icons/TransactionIcon";
 import { DashIcon } from "assets/Icons/DashIcon";
 import { AdminIcon } from "assets/Icons/AdminIcon";
-import tap from "assets/images/taplogo.webp";
+import tlogo from "assets/images/tlogo.png";
 import Logout from "./components/Logout";
 import { NavItem } from "./components/NavItem";
 
@@ -28,7 +28,7 @@ export const SideNav = () => {
   return (
     <Container>
       <Box sx={{ marginTop: "20px" }}>
-        <img src={tap} height={48} width={48} />
+        <img src={tlogo} height={50} width={68} />
       </Box>
 
       <Box>

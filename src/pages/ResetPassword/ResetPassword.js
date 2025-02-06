@@ -2,7 +2,7 @@ import { Typography, Button, CircularProgress, Box, styled } from "@mui/material
 import React from "react";
 import { useFormik } from "formik";
 import { useSnackbar } from "notistack";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { TextInput } from "../../components/TextInput";
 import { useResetPassword } from "api/Auth/forgetPassword";
@@ -37,15 +37,14 @@ export const ResetPassword = () => {
           
             {
               onError: (err) => {
+                enqueueSnackbar("An error occurred. Please try again later.", { variant: "error" });
                 console.log({ err });
               },
               onSuccess: (res) => {
                 if (res.status !== "error") {
                   enqueueSnackbar("Password reset successful", { variant: "success" });
                   navigate("/login")
-                 } else {
-                  enqueueSnackbar(res.message, { variant: "error" });
-                }
+                 } 
               },
             }
           
@@ -63,40 +62,40 @@ export const ResetPassword = () => {
       <Typography variant="h5" sx={{ marginTop: "15px" }}>
         Enter a new password to access the settlement portal
       </Typography>
-
+    <form onSubmit={handleSubmit}>
       <TextInput type="password" label="Password" id="password"
-          name="newPassword"
-          value={values.newPassword}
-          onChange={handleChange}
-          onBlur={handleBlur} />
-          {errors.newPassword && touched.newPassword && (
-            <p style={{ color: "red" }}>{errors.newPassword}</p>
-          )}
+    name="newPassword"
+         value={values.newPassword}
+         onChange={handleChange}
+         onBlur={handleBlur} />
+         {errors.newPassword && touched.newPassword && (
+           <p style={{ color: "red" }}>{errors.newPassword}</p>
+         )}
       <TextInput type="password" label="Confirm Password" id="confirmPassword"
-          name="confirmPassword"
-          value={values.confirmPassword}
-          onChange={handleChange}
-          onBlur={handleBlur}/>
-          {errors.confirmPassword && touched.confirmPassword && (
-            <p style={{ color: "red" }}>{errors.confirmPassword}</p>
-          )}
+         name="confirmPassword"
+         value={values.confirmPassword}
+         onChange={handleChange}
+         onBlur={handleBlur}/>
+         {errors.confirmPassword && touched.confirmPassword && (
+           <p style={{ color: "red" }}>{errors.confirmPassword}</p>
+    )}
       <Button
-        
         type="submit"
         variant="contained"
-        onClick={handleSubmit}
         disabled={isPending}
         sx={{ marginTop: "30px", width: "100%" }}
       >
         Change Password
         {isPending && (
-          <CircularProgress
-            size={18}
-            color="primary"
-            style={{ marginLeft: "10px" }}
-          />
+         <CircularProgress
+           size={18}
+           color="primary"
+           style={{ marginLeft: "10px" }}
+         />
         )}
       </Button>
+    </form>
+     
     </Container>
   );
 };

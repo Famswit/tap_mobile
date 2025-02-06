@@ -9,9 +9,11 @@ const Views = {
   CHANGE_ROLE: "change-role",
 };
 
-export const SummaryDetails = ({ teamMate, open, handleClose }) => {
+export const SummaryDetails = ({ teamMate, open, handleClose, handleRoleChange }) => {
   const [currentView, setCurrentView] = React.useState(Views.SUMMARY_ROLE);
   console.log({ teamMate });
+  console.log("handleRoleChange:", handleRoleChange);
+
 
   return (
     <Modal
@@ -32,7 +34,7 @@ export const SummaryDetails = ({ teamMate, open, handleClose }) => {
           }}
         />
       )}
-      {currentView === Views.CHANGE_ROLE && <ChangeRole teamMate={teamMate} />}
+      {currentView === Views.CHANGE_ROLE && <ChangeRole teamMate={teamMate} handleRoleChange={handleRoleChange} />}
     </Modal>
   );
 };

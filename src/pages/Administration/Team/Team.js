@@ -3,8 +3,24 @@ import { Box, Typography } from "@mui/material";
 import TeamTable from "./components/TeamTable/TeamTable";
 import Invite from "./components/Invite";
 import Search from "components/Search";
+import { useState } from "react";
 
 export const Team = () => {
+  const [teams, setTeams] = useState([
+    { id: 1, fullname: "User 1", email: "user1@example.com", roles: "Admin", status: "Active" },
+  ]);
+  const handleInviteTeammate = (newTeammate) => {
+    setTeams((prevTeams) => [newTeammate, ...prevTeams]);
+  };
+  const handleUpdate = (newTeammate) => {
+    setTeams((prevTeams) => prevTeams.map(item => {
+      if(item.id === newTeammate.id){
+        return newTeammate
+      }else{
+        return item
+      }
+    }));
+  };
   return (
     <Box sx={{ width: "100%", paddingRight: "20px" }}>
       <Box sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -15,11 +31,11 @@ export const Team = () => {
           <Search />
         </Box>
         <Box sx={{ marginTop: "-40px", display: "flex", gap: "20px" }}>
-          <Invite />
+          <Invite onInviteTeammate={handleInviteTeammate}/>
         </Box>
       </Box>
       <Box sx={{ marginTop: "70px" }}>
-        <TeamTable />
+        <TeamTable team={teams}/>
       </Box>
     </Box>
   );

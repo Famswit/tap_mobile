@@ -1,11 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 
+const API_BASE_URL = process.env.base_url;
+
 export const useCreateRole = (token, options = {}) => {
   return useMutation({
     ...options,
     mutationFn: (data) => {
       return fetch(
-        "https://settlement-staging.azurewebsites.net/api/v1/app/roles",
+        `${API_BASE_URL}/roles`,
         {
           method: "POST",
           headers: {
@@ -24,7 +26,7 @@ export const useUpdateRole = (token, options = {}) => {
     ...options,
     mutationFn: (data) => {
       return fetch(
-        "https://settlement-staging.azurewebsites.net/api/v1/app/teams/account/role",
+        `${API_BASE_URL}/teams/account/role`,
         {
           method: "PUT",
           headers: {

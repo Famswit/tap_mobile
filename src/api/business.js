@@ -1,12 +1,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 
+const API_BASE_URL = process.env.base_url;
+
 export const useGETBusinesses = (businessId, options = {}) => {
   return useQuery({
     ...options,
     queryKey: ["business", { businessId }],
     queryFn: () => {
       return fetch(
-        `https://settlement-staging.azurewebsites.net/api/v1/app/businesses`,
+        `${API_BASE_URL}/businesses`,
         {
           method: "GET",
           headers: {
@@ -25,7 +27,7 @@ export const useCreateBusiness = (token, options = {}) => {
     ...options,
     mutationFn: (data) => {
       return fetch(
-        "https://settlement-staging.azurewebsites.net/api/v1/app/businesses",
+        `${API_BASE_URL}/businesses`,
         {
           method: "POST",
           headers: {
@@ -45,7 +47,7 @@ export const useCopyAPIKey = (businessId, options = {}) => {
     queryKey: ["APIKey", { businessId }],
     queryFn: () => {
       return fetch(
-        `https://settlement-staging.azurewebsites.net/api/v1/app/businesses/${businessId}/api-key`,
+        `${API_BASE_URL}/businesses/${businessId}/api-key`,
         {
           method: "GET",
           headers: {
@@ -63,7 +65,7 @@ export const useResetAPI = (token, options = {}) => {
     ...options,
     mutationFn: (data) => {
       return fetch(
-        "https://settlement-staging.azurewebsites.net/api/v1/app/businesses/f61b0c3d-3455-43eb-ba7f-a67cf1de11a6/api-key/reset",
+       ` ${API_BASE_URL}/businesses/f61b0c3d-3455-43eb-ba7f-a67cf1de11a6/api-key/reset`,
         {
           method: "POST",
           headers: {
@@ -84,7 +86,7 @@ export const useGetBusinessTransaction = (businessTransactionId, options = {}) =
     queryKey: ["businessTransaction", { businessTransactionId }],
     queryFn: () => {
       return fetch(
-        `https://settlement-staging.azurewebsites.net/api/v1/app/businesses/${businessTransactionId}/transactions`,
+        `${API_BASE_URL}/businesses/${businessTransactionId}/transactions`,
         {
           method: "GET",
           headers: {

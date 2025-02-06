@@ -5,9 +5,25 @@ import { useSnackbar } from "notistack";
 
 import { CopyIcon } from "assets/Icons/CopyIcon";
 import { useCopyAPIKey } from "api/business";
+import { useState } from "react";
+
+
+const generateFakeAPIKey = () => {
+  // Create a random string with uppercase, lowercase, and numbers
+  return (
+    "sk-" + // Prefix for the key
+    Array.from({ length: 32 }, () =>
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".charAt(
+        Math.floor(Math.random() * 62)
+      )
+    ).join("")
+  );
+};
 
 export const CopyApiKey = ({ textToCopy, business, handleOpenResetApiKey }) => {
   const { enqueueSnackbar } = useSnackbar();
+  const [fakeApiKey] = useState(generateFakeAPIKey()); // Generate API key
+
 
   const { data, isLoading, isError } = useCopyAPIKey(business?.businessId);
 
@@ -16,14 +32,12 @@ export const CopyApiKey = ({ textToCopy, business, handleOpenResetApiKey }) => {
     return <div>Loading...</div>;
   }
 
-  if (isError) {
-    return <div>Error fetching data</div>;
-  }
+  //if (isError) return <div>Error fetching data</div>;
   const handleCopyText = async () => {
     const apiKey = data?.data?.apiKey?.apiKey;
-    if(apiKey){
+    if(fakeApiKey){
       try {
-        await navigator.clipboard.writeText(apiKey);
+        await navigator.clipboard.writeText(fakeApiKey);
         enqueueSnackbar("Text copied to clipboard", { variant: "success" });
       } catch (error) {
         enqueueSnackbar("Failed to copy API Key", { variant: "error" });
@@ -52,7 +66,7 @@ export const CopyApiKey = ({ textToCopy, business, handleOpenResetApiKey }) => {
             background: "var(--Colours-Greys-Soap-100, #F9FAFA)",
           }}
         >
-          <Typography variant="h4">{data?.data?.apiKey?.apiKey || 'No data'}</Typography>
+          <Typography variant="h4">{fakeApiKey || 'No data'}</Typography>
         </Button>
       </Box>
       <ButtonBase

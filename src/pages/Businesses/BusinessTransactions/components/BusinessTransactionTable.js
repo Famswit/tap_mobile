@@ -1,7 +1,5 @@
-import * as React from "react";
-import PropTypes from "prop-types";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
-import Collapse from "@mui/material/Collapse";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -9,176 +7,90 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import Collapse from "@mui/material/Collapse";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { useState } from "react";
-import { useGetBusinessTransaction } from "api/business";
+import PropTypes from "prop-types";
 
-const itemPerPage = 5;
+const itemsPerPage = 5;
 
-function data(description, amount, date, status) {
-  return {
-    description,
-    amount,
-    date,
-    status,
-    femi: [
+// Function to generate fake business transaction data
+const generateFakeTransactionData = () => {
+  const statuses = ["successful", "pending", "failed"];
+  const descriptions = ["Payment", "Refund", "Withdrawal", "Deposit"];
+
+  return Array.from({ length: 20 }, (_, index) => ({
+    id: index + 1,
+    description: descriptions[Math.floor(Math.random() * descriptions.length)],
+    amount: `$${(Math.random() * 1000).toFixed(2)}`,
+    date: new Date(
+      Date.now() - Math.random() * 10000000000
+    ).toLocaleDateString(),
+    status: statuses[Math.floor(Math.random() * statuses.length)],
+    details: [
       {
-        reference: "#199-238-2943-1334",
-        bankname: "Zenith bank",
-        mode: "Bank transfer",
-        bankno: "0012343565",
-        accountname: "Josh Bamara",
+        reference: `#REF-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+        bankName: "Zenith Bank",
+        mode: "Bank Transfer",
+        bankNo: `00${Math.floor(Math.random() * 1000000000)}`,
+        accountName: `Account ${index + 1}`,
       },
     ],
-  };
-}
+  }));
+};
 
-function Row(props) {
-  const { row } = props;
-  const [open, setOpen] = React.useState(false);
+function Row({ row }) {
+  const [open, setOpen] = useState(false);
 
   return (
-    <React.Fragment>
+    <>
       <TableRow sx={{ "& > *": { borderBottom: "none" } }}>
-        <TableCell
-          width={300}
-          sx={{ paddingLeft: "50px", borderBottom: "none" }}
-        >
-          {row.description}
-        </TableCell>
-        <TableCell align="right" sx={{ borderBottom: "none" }}>
-          {row.amount}
-        </TableCell>
-        <TableCell align="right" sx={{ borderBottom: "none" }}>
-          {row.date}
-        </TableCell>
-        <TableCell
-          align="right"
-          sx={{
-            borderBottom: "none",
-            color: `${row.status === "failed" ? "red" : "#25B883"}`,
-          }}
+        <TableCell width={100} sx={{ paddingLeft: "50px" }}>{row.description}</TableCell>
+        <TableCell width={200} align="right">{row.amount}</TableCell>
+        <TableCell width={200} align="right">{row.date}</TableCell>
+        <TableCell width={200}
+          sx={{ color: row.status === "failed" ? "red" : "#25B883" }}
         >
           <Typography
-            variant=""
             sx={{
-              background: `${row.status === "failed" ? "#FEEFF0" : "#E9F8F3"}`,
+              background: row.status === "failed" ? "#FEEFF0" : "#E9F8F3",
               padding: "4px 16px",
-              textAlign: "center",
               borderRadius: "22px",
+              textAlign: 'center'
             }}
           >
             {row.status}
           </Typography>
         </TableCell>
-
-        <TableCell
-          sx={{ borderBottom: "none", borderTop: "1.6px solid #EBEEEF" }}
-        >
-          <Box
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? (
-              <Box sx={{ display: "flex", gap: "10px" }}>
-                <Typography variant="h5" color="#000" paddingLeft={5}>
-                  Collapse
-                </Typography>
-                <KeyboardArrowUpIcon />
-              </Box>
-            ) : (
-              <Box sx={{ display: "flex", gap: "10px" }}>
-                <Typography variant="h5" color="#000" paddingLeft={5}>
-                  View Details
-                </Typography>
-                <KeyboardArrowDownIcon />
-              </Box>
-            )}
+        <TableCell width={150}>
+          <Box onClick={() => setOpen(!open)} sx={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
+            <Typography>{open ? "Collapse" : "View Details"}</Typography>
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </Box>
         </TableCell>
       </TableRow>
-
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell colSpan={6} style={{ paddingBottom: 0, paddingTop: 0 }}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography
-                variant="h6"
-                gutterBottom
-                component="div"
-              ></Typography>
-              <Table
-                size="small"
-                aria-label="purchases"
-                sx={{ width: "97%", marginTop: "30px" }}
-              >
+            <Box margin={2}>
+              <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell
-                      sx={{
-                        borderBottom: "none",
-                        paddingLeft: "30px",
-                        width: "400px",
-                        color: "#7C7A78",
-                      }}
-                    >
-                      REFERENCE NUMBER
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        borderBottom: "none",
-                        color: "#7C7A78",
-                        paddingLeft: "-150px",
-                      }}
-                    >
-                      BANK NUMBER
-                    </TableCell>
-                    <TableCell
-                      align="right"
-                      sx={{ borderBottom: "none", color: "#7C7A78" }}
-                    >
-                      PAYMENT MODE
-                    </TableCell>
-                    <TableCell
-                      align="right"
-                      sx={{ borderBottom: "none", color: "#7C7A78" }}
-                    >
-                      BANK ACCOUNT NO
-                    </TableCell>
-                    <TableCell
-                      align="right"
-                      sx={{ borderBottom: "none", color: "#7C7A78" }}
-                    >
-                      {" "}
-                      ACCOUNT NAME
-                    </TableCell>
+                    <TableCell>REFERENCE NUMBER</TableCell>
+                    <TableCell align="right">BANK NUMBER</TableCell>
+                    <TableCell align="right">PAYMENT MODE</TableCell>
+                    <TableCell align="right">BANK ACCOUNT NO</TableCell>
+                    <TableCell align="right">ACCOUNT NAME</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.femi.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell
-                        component="th"
-                        scope="row"
-                        sx={{ borderBottom: "none", paddingLeft: "42px" }}
-                      >
-                        {historyRow.reference}
-                      </TableCell>
-                      <TableCell sx={{ borderBottom: "none" }}>
-                        {historyRow.bankname}
-                      </TableCell>
-                      <TableCell sx={{ borderBottom: "none" }} align="right">
-                        {historyRow.mode}
-                      </TableCell>
-                      <TableCell sx={{ borderBottom: "none" }} align="right">
-                        {historyRow.bankno}
-                      </TableCell>
-                      <TableCell sx={{ borderBottom: "none" }} align="right">
-                        {historyRow.accountname}
-                      </TableCell>
+                  {row.details.map((detail) => (
+                    <TableRow key={detail.reference} >
+                      <TableCell>{detail.reference}</TableCell>
+                      <TableCell align="right">{detail.bankName}</TableCell>
+                      <TableCell align="right">{detail.mode}</TableCell>
+                      <TableCell align="right">{detail.bankNo}</TableCell>
+                      <TableCell align="right">{detail.accountName}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -187,142 +99,115 @@ function Row(props) {
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </>
   );
 }
 
 Row.propTypes = {
   row: PropTypes.shape({
     description: PropTypes.string.isRequired,
-    amount: PropTypes.number.isRequired,
-    date: PropTypes.number.isRequired,
-    femi: PropTypes.arrayOf(
+    amount: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired,
+    status: PropTypes.string.isRequired,
+    details: PropTypes.arrayOf(
       PropTypes.shape({
-        amount: PropTypes.number.isRequired,
-        customerId: PropTypes.string.isRequired,
-        date: PropTypes.string.isRequired,
+        reference: PropTypes.string.isRequired,
+        bankName: PropTypes.string.isRequired,
+        mode: PropTypes.string.isRequired,
+        bankNo: PropTypes.string.isRequired,
+        accountName: PropTypes.string.isRequired,
       })
     ).isRequired,
-    name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    protein: PropTypes.number.isRequired,
   }).isRequired,
 };
 
-
-const numberOfPage = Math.ceil(data.length / itemPerPage);
-const pageIndex = Array.from({ length: numberOfPage }, (_, idx) => idx + 1);
-
 export default function BusinessTransactionTable() {
   const [currentPage, setCurrentPage] = useState(0);
- 
+  const transactionData = generateFakeTransactionData();
 
-  const { data, isLoading, isError } = useGetBusinessTransaction();
-  const businessTransaction = data?.data?.businessTransaction || [];
-  console.log(data);
+  const totalPages = Math.ceil(transactionData.length / itemsPerPage);
+  const currentData = transactionData.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+  const visiblePages = Array.from(
+    { length: Math.min(3, totalPages) }, // Show up to 3 pages
+    (_, idx) => Math.max(Math.min(currentPage - 1 + idx, totalPages - 3), 0) + idx
+  );
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < totalPages) setCurrentPage(newPage);
   };
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error fetching data</div>;
+
   return (
     <TableContainer component={Box}>
-      <Table aria-label="collapsible table">
+      <Table>
         <TableHead>
           <TableRow>
             <TableCell sx={{ paddingLeft: "50px" }}>DESCRIPTION</TableCell>
-            <TableCell align="right" sx={{ paddingLeft: "100px" }}>
-              AMOUNT
-            </TableCell>
-            <TableCell align="right" sx={{ paddingLeft: "100px" }}>
-              DATE & TIME
-            </TableCell>
-            <TableCell align="right" sx={{ paddingLeft: "100px" }}>
-              STATUS
-            </TableCell>
+            <TableCell align="right">AMOUNT</TableCell>
+            <TableCell align="right">DATE & TIME</TableCell>
+            <TableCell align="right">STATUS</TableCell>
+            <TableCell align="center">DETAILS</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {businessTransaction.map((row) => (
-            <Row key={row.name} row={row} />
+          {currentData.map((row) => (
+            <Row key={row.id} row={row} />
           ))}
-          <Box
-            sx={{
-              width: "370%",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginLeft: "50px",
-              padding: "20px 0",
-            }}
-          >
-            <Typography variant="h5">
-              {" "}
-              {currentPage + 1}-{itemPerPage} of 10{" "}
-            </Typography>
-            <Box sx={{ display: "flex", gap: "5px" }}>
-              <Typography
-                variant="h5"
-                sx={{
-                  padding: " 8px 20px",
-                  cursor: "pointer",
-                  "&:hover": {
-                    background: "var(--Neutral-Divider, #F2F4F4)",
-                    borderRadius: "6px",
-                  },
-                }}
-                disabled={currentPage < 1}
-                onClick={() => handlePageChange(currentPage - 1)}
-              >
-                Prev
-              </Typography>
-
-              {pageIndex
-                .slice(
-                  Math.max(0, currentPage - 2),
-                  Math.min(numberOfPage, currentPage + 1)
-                )
-                .map((page) => (
-                  <Typography
-                    variant="h4"
-                    sx={{
-                      background: "var(--Neutral-Divider, #F2F4F4)",
-                      borderRadius: "6px",
-                      padding: " 8px 20px",
-                      cursor: "pointer",
-
-                      "&:hover": {
-                        background: "var(--Neutral-Divider, #F2F4F4)",
-                      },
-                    }}
-                    key={page}
-                    onClick={() => handlePageChange(page - 1)}
-                    className={page === currentPage + 1 ? "active" : ""}
-                  >
-                    Page {page}
-                  </Typography>
-                ))}
-
-              <Typography
-                disabled={currentPage > numberOfPage}
-                variant="h5"
-                sx={{
-                  padding: " 8px 20px",
-                  cursor: "pointer",
-                  "&:hover": {
-                    background: "var(--Neutral-Divider, #F2F4F4)",
-                    borderRadius: "6px",
-                  },
-                }}
-                onClick={() => handlePageChange(currentPage + 1)}
-              >
-                Next
-              </Typography>
-            </Box>
-          </Box>
         </TableBody>
       </Table>
+
+      {/* Pagination Controls */}
+      <Box sx={{ display: 'flex', paddingBottom:'100px', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', marginRight:'30px' }}>
+      <Typography variant="h5">
+        {`${currentPage * itemsPerPage + 1}-${Math.min((currentPage + 1) * itemsPerPage, transactionData.length)} of ${transactionData.length}`}
+      </Typography>
+      <Box sx={{ display: 'flex', gap: '10px' }}>
+        
+        {/* Prev Button */}
+        <Typography
+          variant="h5"
+          sx={{
+            padding: '8px 20px',
+            cursor: currentPage > 0 ? 'pointer' : 'not-allowed',
+            background: currentPage > 0 ? 'none' : '#f2f2f2',
+            borderRadius: '6px',
+            "&:hover": { background: currentPage > 0 ? '#F2F4F4' : 'none' }
+          }}
+          onClick={() => handlePageChange(currentPage - 1)}
+        >
+          Prev
+        </Typography>
+    
+        {/* Active Page Number */}
+        <Typography
+          variant="h5"
+          sx={{
+            padding: '8px 20px',
+            background: '#E0E0E0',
+            borderRadius: '6px',
+            fontWeight: 'bold',
+          }}
+        >
+          Page {currentPage + 1}
+        </Typography>
+    
+        {/* Next Button */}
+        <Typography
+          variant="h5"
+          sx={{
+            padding: '8px 20px',
+            cursor: currentPage < totalPages - 1 ? 'pointer' : 'not-allowed',
+            background: currentPage < totalPages - 1 ? 'none' : '#f2f2f2',
+            borderRadius: '6px',
+            "&:hover": { background: currentPage < totalPages - 1 ? '#F2F4F4' : 'none' }
+          }}
+          onClick={() => handlePageChange(currentPage + 1)}
+        >
+          Next
+        </Typography>
+      </Box>
+    </Box>
+    
     </TableContainer>
   );
 }

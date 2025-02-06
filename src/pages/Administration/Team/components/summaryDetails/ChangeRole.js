@@ -1,11 +1,11 @@
 import * as React from "react";
 import { Box, Typography, Button, MenuItem, TextField, CircularProgress } from "@mui/material";
-import { Link } from "react-router-dom";
 
 import { useSnackbar } from "notistack";
 import { useFormik } from "formik";
 import { changeRoleValidation } from "schema/changeRoleValidation";
 import { useUpdateRole } from "api/roles";
+import { useState } from "react";
 
 
 const RolesMenuOption = [
@@ -24,97 +24,76 @@ const RolesMenuOption = [
   },
 ];
 
-export default function ChangeRole({teamMate}) {
+export default function ChangeRole({ teamMate, handleRoleChange }) {
+  const [selectedRole, setSelectedRole] = useState(teamMate.roles);
+
   const { mutate, isPending } = useUpdateRole();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-  useFormik({
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleRoleChange({ ...teamMate, roles: formik.values.roles });
+  };
+
+  const formik = useFormik({
     initialValues: {
-      roles: "",
+      roles: teamMate.roles,
     },
     validationSchema: changeRoleValidation,
-
     onSubmit: (values) => {
       mutate(
-        { data: {  roles: values.roles } },
+        { data: { roles: values.roles }, id: teamMate.id },
         {
-          onError: (err) => {
-            console.log({ err });
+          onSuccess: () => {
+            enqueueSnackbar("Role updated successfully", { variant: "success" });
+            handleRoleChange({ ...teamMate, roles: values.roles });
           },
-          onSuccess: (res) => {
-            if (res.status !== "error") {
-              enqueueSnackbar("Login Successful", { variant: "success" });
-            } else {
-              enqueueSnackbar(res.message, { variant: "error" });
-            }
+          onError: () => {
+            enqueueSnackbar("Error updating role", { variant: "error" });
           },
         }
       );
     },
   });
+
   return (
-    <div>
-      <Box sx={{ width: "312px", height: "264px" }}>
-        <Typography
-          variant="h2"
-          sx={{ textAlign: "center", fontStyle: "normal", marginTop: "20px" }}
-        >
-         Change Role {teamMate.amount}
-        </Typography>
-
-        <Box sx={{marginTop:'30px', display: "flex", flexDirection: "column", gap: "10px" }}>
-        <Typography variant="h4">Role</Typography>
-
-        <TextField
-        placeholder="select role"
-          id="role"
-          name="roles"
-          value={values.roles}
-          onChange={handleChange}               
-          onBlur={handleBlur} 
-          size="small"
-          sx={{
-            width: "100%",
-            marginTop: "5px",
-            boxShadow: "none",
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderWidth: "1px !important",
-              borderColor: "#EBEDEF !important",
-            },
-          }}
-          select
-        >
-          {RolesMenuOption.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField>
-        {errors.roles && touched.roles && (
-          <p style={{ color: "red" }}>{errors.roles}</p>
-        )}
+    <Box sx={{ width: "312px", height: "264px" }}>
+      <Typography variant="h2" sx={{ textAlign: "center", marginTop: "20px" }}>
+        Change Role for {teamMate.fullname}
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <Box sx={{ marginTop: '30px', display: "flex", flexDirection: "column", gap: "10px" }}>
+          <Typography variant="h4">Role</Typography>
+          <TextField
+            id="roles"
+            name="roles"
+            select
+            value={formik.values.roles}
+            onChange={formik.handleChange}
+            size="small"
+            sx={{ width: "100%", marginTop: "5px" }}
+          >
+            {RolesMenuOption.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          {formik.errors.roles && formik.touched.roles && (
+            <Typography color="error">{formik.errors.roles}</Typography>
+          )}
         </Box>
-
         <Button
-         // LinkComponent={Link}
-         // to="roles"
-         type="submit"
-         onClick={handleSubmit}
-        disabled={isPending}
+          type="submit"
           variant="contained"
           sx={{ width: "100%", padding: "10px", marginTop: "50px" }}
+          disabled={isPending}
         >
-          Change role
-          {isPending && (
-            <CircularProgress
-              size={18}
-              color="primary"
-              style={{ marginLeft: "10px" }}
-            />
-          )}
+          Change Role
+          {isPending && <CircularProgress size={18} style={{ marginLeft: "10px" }} />}
         </Button>
-      </Box>
-    </div>
+      </form>
+    </Box>
   );
 }

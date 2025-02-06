@@ -77,7 +77,8 @@ export default function Logout() {
           </Button>
 
           <Button
-            LinkComponent={Link}
+          onClick={handleClose}
+            to = "#"
             variant="outlined"
             sx={{
               width: "100%",

@@ -7,12 +7,14 @@ import { useNavigate } from "react-router-dom";
 
 const ITEM_HEIGHT = 48;
 
-export const BusinessMenuOption = ({ business, onSelectBusiness }) => {
+export const BusinessMenuOption = ({ business, onGenerateApiKey }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -23,15 +25,15 @@ export const BusinessMenuOption = ({ business, onSelectBusiness }) => {
     {
       name: "View withdrawal details",
       onClick: () => {
-        navigate('/business/businesstransact');
-        handleClose()
+        navigate("/business/businesstransact", { state: { business } }); // Pass business as state
+        handleClose();
       },
     },
     {
       name: "Generate API key",
       onClick: () => {
-        onSelectBusiness(business);
-        handleClose()
+        onGenerateApiKey(business);
+        handleClose();
       },
     },
   ];

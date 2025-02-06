@@ -1,6 +1,7 @@
 import {useMutation, useQuery } from "@tanstack/react-query";
 
 
+const API_BASE_URL = process.env.base_url;
 
 export const useGetSettingsProfile = (settingsProfileId, options = {}) => {
   return useQuery({
@@ -8,7 +9,7 @@ export const useGetSettingsProfile = (settingsProfileId, options = {}) => {
     queryKey: ["settingsProfile", { settingsProfileId }],
     queryFn: () => {
       return fetch(
-        `https://settlement-staging.azurewebsites.net/api/v1/app/settings/profile`,
+        `${API_BASE_URL}/settings/profile`,
         {
           method: "GET",
           headers: {
@@ -26,7 +27,7 @@ export const useChangePasswordProfile = (token, options = {}) => {
     ...options,
     mutationFn: (data) => {
       return fetch(
-        "https://settlement-staging.azurewebsites.net/api/v1/app/settings/profile/password",
+        `${API_BASE_URL}/settings/profile/password`,
         {
           method: "PUT",
           headers: {

@@ -50,16 +50,15 @@ const AssignToMenuOption = [
   },
 ];
 
-export default function Invite() {
+export default function Invite({onInviteTeammate}) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  
   const navigate = useNavigate();
-  const { mutate, isPending } = useInviteTeam();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-  useFormik({
+  const formik = useFormik({
     initialValues: {
       email: "",
       roles: "",
@@ -68,22 +67,17 @@ export default function Invite() {
     validationSchema: inviteTeamValidation,
 
     onSubmit: (values) => {
-      mutate(
-        { data: { email: values.email, roles: values.roles, assignTo:values.assignTo } },
-        {
-          onError: (err) => {
-            console.log({ err });
-          },
-          onSuccess: (res) => {
-            if (res.status !== "error") {
-              sessionStorage.setItem('token', res.data.token);
-              enqueueSnackbar("Login Successful", { variant: "success" });
-            } else {
-              enqueueSnackbar(res.message, { variant: "error" });
-            }
-          },
-        }
-      );
+      const newTeammate = {
+        id: Date.now(),
+        fullname: values.assignTo,
+        email: values.email,
+        roles: values.roles,
+        status: "Invite sent",
+      };
+      onInviteTeammate(newTeammate);
+      enqueueSnackbar("invite added successfully", { variant: "success" });
+      handleClose();
+      formik.resetForm();
     },
   });
   return (
@@ -105,13 +99,14 @@ export default function Invite() {
             Invite Team Mate
           </Typography>
 
+          <form onSubmit={formik.handleSubmit}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             <TextInput label="Email Address" id="email"  placeholder="enter email"
-            value={values.email}
-            onChange={handleChange}
-            onBlur={handleBlur} />
-            {errors.email && touched.email && (
-              <p style={{ color: "red" }}>{errors.email}</p>
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur} />
+            {formik.errors.email && formik.touched.email && (
+              <p style={{ color: "red" }}>{formik.errors.email}</p>
             )}
             <Box>
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -138,9 +133,9 @@ export default function Invite() {
               placeholder="select role"
                 id="role"
                 name="roles"
-                value={values.roles}
-                onChange={handleChange}               
-                onBlur={handleBlur} 
+                value={formik.values.roles}
+                onChange={formik.handleChange}               
+                onBlur={formik.handleBlur} 
                 size="small"
                 sx={{
                   width: "100%",
@@ -159,8 +154,8 @@ export default function Invite() {
                   </MenuItem>
                 ))}
               </TextField>
-              {errors.roles && touched.roles && (
-                <p style={{ color: "red" }}>{errors.roles}</p>
+              {formik.errors.roles && formik.touched.roles && (
+                <p style={{ color: "red" }}>{formik.errors.roles}</p>
               )}
             </Box>
 
@@ -170,8 +165,8 @@ export default function Invite() {
                 size="small"
                 id="assignTo"
                 name="assignTo"
-                onChange={handleChange}               
-                onBlur={handleBlur} 
+                onChange={formik.handleChange}               
+                onBlur={formik.handleBlur} 
                 sx={{
                   width: "100%",
                   marginTop: "5px",
@@ -189,8 +184,8 @@ export default function Invite() {
                   </MenuItem>
                 ))}
               </TextField>
-              {errors.assignTo && touched.assignTo && (
-                <p style={{ color: "red" }}>{errors.assignTo}</p>
+              {formik.errors.assignTo && formik.touched.assignTo && (
+                <p style={{ color: "red" }}>{formik.errors.assignTo}</p>
               )}
             </Box>
 
@@ -198,13 +193,14 @@ export default function Invite() {
               type="submit"
               variant="contained"
               sx={{ marginTop: "30px", padding: "10px" }}
-              onClick={handleSubmit}
-              disabled={isPending}
+              disabled={formik.isSubmitting}
             >
               Send Invite
-            
+              {formik.isPending && <CircularProgress size={18} sx={{ marginLeft: "10px" }} />}
             </Button>
           </Box>
+          </form>
+          
         </Box>
       </Modal>
     </div>

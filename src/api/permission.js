@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
+const API_BASE_URL = process.env.base_url;
 
 export const useGetPermission = (permissionId, options = {}) => {
   return useQuery({
@@ -7,7 +8,7 @@ export const useGetPermission = (permissionId, options = {}) => {
     queryKey: ["permission", { permissionId }],
     queryFn: () => {
       return fetch(
-        `https://settlement-staging.azurewebsites.net/api/v1/app/permissions`,
+        `${API_BASE_URL}/permissions`,
         {
           method: "GET",
           headers: {

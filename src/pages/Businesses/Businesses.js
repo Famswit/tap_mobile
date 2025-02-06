@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -16,9 +16,9 @@ import { SearchIcon } from "assets/Icons/SearchIcon";
 import { ApiKey } from "./components/ApiKey/ApiKey";
 import { BusinessTable } from "./components/BusinessTable";
 import { AddBusiness } from "./components/AddBusiness/AddBusiness";
-import { useGETBusinesses } from "api/business";
+import { BusinessTransactions } from "./BusinessTransactions";
 
-
+// Styled Export Button
 export const ExportButton = styled(Button)({
   marginTop: "35px",
   width: "169px",
@@ -28,46 +28,49 @@ export const ExportButton = styled(Button)({
   display: "flex",
   border: "1.5px solid #EFF1F4",
   boxShadow: "none",
-
   "&:hover": {
     backgroundColor: "#cfd8dc",
   },
 });
 
-export const ButtonStyles = styled(Button)({
-  marginTop: "35px",
-  width: "344px",
-  height: "48px",
-  backgroundColor: "#3f50b5",
-  textAlign: "center",
-  "&:hover": {
-    backgroundColor: "#2D75B6",
-  },
-});
-
+// Styled Link
 export const LinkStyles = styled(Link)({
   color: "#fff",
-  textdecoration: "none",
+  textDecoration: "none",
   width: "100%",
-
-  "&:hover": {},
 });
 
 export function Businesses() {
-  const [selectedBusiness, setSelectedBusiness] = useState(null);
-  const [OpenAddBusiness, setOpenAddBusiness] = useState(false);
-  const open = Boolean(OpenAddBusiness);
+  const generateFakeData = () => {
+    const categories = ["Retail", "Food", "Tech", "Health", "Education"];
+    return Array.from({ length: 20 }, (_, index) => ({
+      id: index + 1,
+      businessName: `Business ${index + 1}`,
+      businessCategory: categories[Math.floor(Math.random() * categories.length)],
+      businessEmail: `business${index + 1}@example.com`,
+      dateAdded: new Date(Date.now() - Math.random() * 10000000000).toLocaleDateString(),
+    }));
+  };
 
- 
+  const [businesses, setBusinesses] = useState(generateFakeData());
+  const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const [businessDetails, setBusinessDetails] = useState(null);
+
+  const handleAddBusiness = (newBusiness) => {
+    setBusinesses((prevBusinesses) => [newBusiness, ...prevBusinesses]);
+  };
+
+  const handleViewWithdrawalDetails = (business) => {
+    setBusinessDetails(business);
+  };
+
+  const handleGenerateApiKey = (business) => {
+    setSelectedBusiness(business);
+  };
 
   return (
     <Stack direction="column" spacing={10}>
-      <Box
-        sx={{
-          width: "100%",
-          paddingRight: "20px",
-        }}
-      >
+      <Box sx={{ width: "100%", paddingRight: "20px" }}>
         <Box sx={{ display: "flex", justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignContent: "center" }}>
             <Typography sx={{ fontWeight: "800", fontSize: "1.4rem" }}>
@@ -88,13 +91,7 @@ export function Businesses() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <IconButton
-                        sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
+                      <IconButton>
                         <SearchIcon />
                       </IconButton>
                     </InputAdornment>
@@ -104,7 +101,7 @@ export function Businesses() {
             </Box>
           </Box>
           <Box sx={{ marginTop: "-40px", display: "flex", gap: "20px" }}>
-            <AddBusiness />
+            <AddBusiness onAddBusiness={handleAddBusiness} />
             <ExportButton variant="contained">
               <LinkStyles
                 href="/"
@@ -125,16 +122,18 @@ export function Businesses() {
           </Box>
         </Box>
       </Box>
+
       <BusinessTable
-        onSelectBusiness={(business) => {
-          setSelectedBusiness(business);
-        }}
+        businesses={businesses}
+        onViewWithdrawalDetails={handleViewWithdrawalDetails}
+        onGenerateApiKey={handleGenerateApiKey}
       />
       <ApiKey
-        open={Boolean(selectedBusiness)}
-        business={selectedBusiness}
-        handleClose={() => setSelectedBusiness(null)}
-      />
+      open={Boolean(selectedBusiness)}
+      business={selectedBusiness}
+      handleClose={() => setSelectedBusiness(null)}
+    />
+
     </Stack>
   );
 }

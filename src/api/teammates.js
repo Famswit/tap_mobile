@@ -1,5 +1,6 @@
 import {useMutation, useQuery } from "@tanstack/react-query";
 
+const API_BASE_URL = process.env.base_url;
 
 export const useGetTeams = (teamId, options = {}) => {
   return useQuery({
@@ -7,7 +8,7 @@ export const useGetTeams = (teamId, options = {}) => {
     queryKey: ["teams", { teamId }],
     queryFn: () => {
       return fetch(
-        `https://settlement-staging.azurewebsites.net/api/v1/app/teams`,
+        `${API_BASE_URL}/teams`,
         {
           method: "GET",
           headers: {
@@ -26,7 +27,7 @@ export const useInviteTeam = (token, options = {}) => {
     ...options,
     mutationFn: (data) => {
       return fetch(
-        "https://settlement-staging.azurewebsites.net/api/v1/app/teams/invite",
+        `${API_BASE_URL}/teams/invite-api`,
         {
           method: "POST",
           headers: {
@@ -47,7 +48,7 @@ export const useGetSummaryDetails = (teamId, options = {}) => {
     queryKey: ["summary", { teamId }],
     queryFn: () => {
       return fetch(
-        `https://settlement-staging.azurewebsites.net/api/v1/app/teams/account/${teamId}/permissions`,
+        `${API_BASE_URL}/teams/account/${teamId}/permissions`,
         {
           method: "GET",
           headers: {

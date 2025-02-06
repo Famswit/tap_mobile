@@ -18,6 +18,7 @@ import { validationForgetPassword } from "schema/loginValidation";
 import { useAuthContext } from "context/AuthContext";
 
 
+
 export const Container = styled(Box)({
   width: "344px",
   height: "334px",
@@ -27,11 +28,12 @@ export const Container = styled(Box)({
   transform: "translate(-50%, -50%)",
 });
 
-export const ForgetPassword = () => {
+export const ForgetPassword = (data) => {
   const { mutate, isPending } = useForgetPassword();
-  const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
   const authCtx = useAuthContext();
+  const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+  console.log(data)
 
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
@@ -47,11 +49,12 @@ export const ForgetPassword = () => {
           {
             onSuccess: (res) => {
               if(res.status !== "error") {
-                enqueueSnackbar("Link sent Successful. Link expires in 5 minutes", { variant: "success" })
+                enqueueSnackbar("Link sent Successful. Link expires in 5 minutes", { variant: "success" });
+                navigate("/check");
+
               } else{
                 enqueueSnackbar(res.message, { variant: "error" });
               }
-
             }
           }
 
@@ -61,8 +64,11 @@ export const ForgetPassword = () => {
 
     })
 
-
-  
+  // const handleSubmit = () => {
+  //   if (!errors.email && values.email) {
+  //     navigate("/check"); // Navigate if no validation errors
+  //   }
+  // }
   return (
     <Container>
       <Typography variant="h1">Forget your password?</Typography>
@@ -70,7 +76,7 @@ export const ForgetPassword = () => {
         Enter your email address and we'll send you a link to reset your
         password
       </Typography>
-
+    <form onSubmit={handleSubmit}>
       <TextInput label="Email Address" id="email" 
           value={values.email}
           onChange={handleChange}
@@ -80,11 +86,11 @@ export const ForgetPassword = () => {
         <p style={{ color: "red" }}>{errors.email}</p>
       )}
       <Button
+      type="submit"
         variant="contained"
-        onClick={handleSubmit}
         sx={{ marginTop: "30px", width: "100%" }}
         disabled={isPending}
-
+        onClick={handleSubmit}
       >
         Continue
         {isPending && (
@@ -95,7 +101,7 @@ export const ForgetPassword = () => {
           />
         )}
       </Button>
-
+      </form>
       <ButtonBase
         LinkComponent={Link}
         disableRipple
