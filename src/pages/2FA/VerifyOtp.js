@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Typography,
-  ButtonBase,
-  styled,
-  Box,
-  Button,
-} from "@mui/material";
+import { Typography, ButtonBase, styled, Box, Button } from "@mui/material";
 import { useSnackbar } from "notistack";
 
 import { TextInput } from "components/TextInput";
@@ -21,9 +15,9 @@ const Container = styled(Box)({
   transform: "translate(-50%, -50%)",
 });
 
- const VerifyOtp = () => {
+const VerifyOtp = () => {
   const [otp, setOtp] = useState(["", "", "", ""]);
-  const [timer, setTimer] = useState(119); 
+  const [timer, setTimer] = useState(119);
   const [isResendActive, setIsResendActive] = useState(false);
 
   const { mutate, isPending } = useVerifyOtp();
@@ -41,11 +35,11 @@ const Container = styled(Box)({
       setIsResendActive(true);
     }
 
-    return () => clearInterval(interval); 
+    return () => clearInterval(interval);
   }, [timer]);
 
   const handleResend = () => {
-    setTimer(119); 
+    setTimer(119);
     setIsResendActive(false);
     enqueueSnackbar("OTP resent successfully", { variant: "info" });
   };
@@ -54,7 +48,7 @@ const Container = styled(Box)({
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${minutes}:${secs.toString().padStart(2, "0")}`;
-  }; 
+  };
 
   // Handle form submission
   const handleSubmit = (e) => {
@@ -64,16 +58,16 @@ const Container = styled(Box)({
       enqueueSnackbar("Please fill all OTP fields", { variant: "error" });
       return;
     } else {
-      navigate("/reset")
+      navigate("/reset");
     }
 
     mutate(
-      { otp: otp.join("") }, 
+      { otp: otp.join("") },
       {
         onSuccess: (res) => {
           if (res.status !== "error") {
             enqueueSnackbar("Verification successful", { variant: "success" });
-            navigate("/dashboard"); 
+            navigate("/dashboard");
           } else {
             enqueueSnackbar(res.message, { variant: "error" });
           }
@@ -84,32 +78,21 @@ const Container = styled(Box)({
 
   return (
     <Container>
-     
-      <Typography variant="h1" sx={{ marginTop: "25px"}}>
+      <Typography variant="h1" sx={{ marginTop: "25px" }}>
         Verify your email
       </Typography>
 
-      <Typography
-        variant="h5"
-        sx={{ marginTop: "25px", cursor: "pointer" }}
-      >
-         OTP sent to your email address.
+      <Typography variant="h5" sx={{ marginTop: "25px", cursor: "pointer" }}>
+        OTP sent to your email address.
       </Typography>
-      <Typography
-        variant="h5"
-        sx={{ marginTop: "5px", cursor: "pointer" }}
-      >
+      <Typography variant="h5" sx={{ marginTop: "5px", cursor: "pointer" }}>
         Please enter OTP pin
       </Typography>
 
       <form onSubmit={handleSubmit}>
-      <Box sx={{margin:'20px 0px 20px 0px'}}>
-        <TextInput
-            placeholder="enter otp sent"
-            id="otp"
-  />
-      </Box>
-     
+        <Box sx={{ margin: "20px 0px 20px 0px" }}>
+          <TextInput placeholder="enter otp sent" id="otp" />
+        </Box>
 
         <Button
           variant="contained"

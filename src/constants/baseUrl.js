@@ -1,2 +1,1 @@
-//export const baseUrl =
-//  "https://settlement-staging.azurewebsites.net/api/v1/app";
+export const API_BASE_URL =   process.env.base_url;

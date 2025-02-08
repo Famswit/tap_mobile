@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Typography,
@@ -11,16 +11,12 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { useSnackbar } from "notistack";
-
+import { CheckBox } from "@mui/icons-material";
 
 import { TextInput } from "components/TextInput";
 import { useForgetPassword } from "api/Auth/forgetPassword";
 import { validationForgetPassword } from "schema/loginValidation";
 import { useAuthContext } from "context/AuthContext";
-import { useState } from "react";
-import { CheckBox } from "@mui/icons-material";
-
-
 
 export const Container = styled(Box)({
   width: "344px",
@@ -39,8 +35,7 @@ export const RequestOtp = (data) => {
   const [maskedEmail, setMaskedEmail] = useState("joh***@gmail.com");
 
   const navigate = useNavigate();
-  console.log(data)
-
+  console.log(data);
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
@@ -49,26 +44,25 @@ export const RequestOtp = (data) => {
       },
       validationSchema: validationForgetPassword,
 
-      onSubmit:( values)=> {
+      onSubmit: (values) => {
         mutate(
-          { data: { email: values.email} },
+          { data: { email: values.email } },
           {
             onSuccess: (res) => {
-              if(res.status !== "error") {
-                enqueueSnackbar("Link sent Successful. Link expires in 5 minutes", { variant: "success" });
+              if (res.status !== "error") {
+                enqueueSnackbar(
+                  "Link sent Successful. Link expires in 5 minutes",
+                  { variant: "success" }
+                );
                 navigate("/verify-otp");
-
-              } else{
+              } else {
                 enqueueSnackbar(res.message, { variant: "error" });
               }
-            }
+            },
           }
-
-        )
-
-      }
-
-    })
+        );
+      },
+    });
 
   // const handleSubmit = () => {
   //   if (!errors.email && values.email) {
@@ -78,43 +72,53 @@ export const RequestOtp = (data) => {
   return (
     <Container>
       <Typography variant="h1">Request account otp</Typography>
-      <Typography variant="h5" sx={{ background:'#0000', marginTop: "25px" }}>
+      <Typography variant="h5" sx={{ background: "#0000", marginTop: "25px" }}>
         Enter your email address, an OTP will be sent to {maskedEmail}
       </Typography>
-    <form onSubmit={handleSubmit}>
-      <TextInput label="Email Address" id="email" 
+      <form onSubmit={handleSubmit}>
+        <TextInput
+          label="Email Address"
+          id="email"
           value={values.email}
           onChange={handleChange}
           onBlur={handleBlur}
-      />
-      {errors.email && touched.email && (
-        <p style={{ color: "red" }}>{errors.email}</p>
-      )}
-      <FormControlLabel sx={{marginTop:'20px', marginLeft:'5px'}} control={<CheckBox checked={rememberDevice} onChange={() => setRememberDevice(!rememberDevice)} />} label="Remember this device for 30 days" />
-
-      <Button
-      type="submit"
-        variant="contained"
-        sx={{ marginTop: "30px", width: "100%" }}
-        disabled={isPending}
-      >
-        submit
-        {isPending && (
-          <CircularProgress
-            size={18}
-            color="primary"
-            style={{ marginLeft: "10px" }}
-          />
+        />
+        {errors.email && touched.email && (
+          <p style={{ color: "red" }}>{errors.email}</p>
         )}
-      </Button>
+        <FormControlLabel
+          sx={{ marginTop: "20px", marginLeft: "5px" }}
+          control={
+            <CheckBox
+              checked={rememberDevice}
+              onChange={() => setRememberDevice(!rememberDevice)}
+            />
+          }
+          label="Remember this device for 30 days"
+        />
+
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{ marginTop: "30px", width: "100%" }}
+          disabled={isPending}
+        >
+          submit
+          {isPending && (
+            <CircularProgress
+              size={18}
+              color="primary"
+              style={{ marginLeft: "10px" }}
+            />
+          )}
+        </Button>
       </form>
       <ButtonBase
         LinkComponent={Link}
         disableRipple
         to="/login"
         style={{ width: "100%", textDecoration: "none", color: "#000" }}
-      >
-      </ButtonBase>
+      ></ButtonBase>
     </Container>
   );
 };
