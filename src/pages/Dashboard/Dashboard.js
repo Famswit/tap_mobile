@@ -54,7 +54,7 @@ export const Dashboard = () => {
           fontSize: { xs: "1.2rem", sm: "1.4rem" },
         }}
       >
-        Welcome Back Josh,
+        Welcome Back Oluwafemi Adewole,
       </Typography>
 
       <Grid container spacing={3}>
