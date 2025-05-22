@@ -23,7 +23,7 @@ export const theme = createTheme({
     fontWeight: 600,
     fontStyle: "normal",
     letterSpacing: -0.12,
-    marginTop:20,
+    marginTop:20,  
 
     h1: {
       fontFamily: ["BlinkMacSystemFont"].join(","),

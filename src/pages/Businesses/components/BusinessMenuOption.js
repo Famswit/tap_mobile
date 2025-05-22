@@ -25,7 +25,7 @@ export const BusinessMenuOption = ({ business, onGenerateApiKey }) => {
     {
       name: "View withdrawal details",
       onClick: () => {
-        navigate("/business/businesstransact", { state: { business } }); // Pass business as state
+        navigate("/business/businesstransact", { state: { business } }); 
         handleClose();
       },
     },

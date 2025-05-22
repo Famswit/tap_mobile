@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Typography, ButtonBase, styled, Box, Button } from "@mui/material";
+import { Typography, ButtonBase, styled, Box, Button, CircularProgress } from "@mui/material";
 import { useSnackbar } from "notistack";
-
 import { TextInput } from "components/TextInput";
 import { useVerifyOtp } from "api/Auth/Otp";
 
@@ -15,14 +14,32 @@ const Container = styled(Box)({
   transform: "translate(-50%, -50%)",
 });
 
+const OtpInputContainer = styled(Box)({
+  display: "flex",
+  gap: "1px",
+  justifyContent: "center",
+  margin: "20px 0px 20px 0px",
+});
+
+const OtpInput = styled(TextInput)({
+  width: "40px",
+  height: "40px",
+  textAlign: "center",
+  fontSize: "20px",
+  borderRadius: "4px",
+});
+
 const VerifyOtp = () => {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [timer, setTimer] = useState(119);
   const [isResendActive, setIsResendActive] = useState(false);
+  const [fakeLoading, setFakeLoading] = useState(false);
 
   const { mutate, isPending } = useVerifyOtp();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
+
+  const inputRefs = useRef([]);
 
   // Timer functionality
   useEffect(() => {
@@ -50,31 +67,48 @@ const VerifyOtp = () => {
     return `${minutes}:${secs.toString().padStart(2, "0")}`;
   };
 
+  // Handle OTP input change
+  const handleOtpChange = (index, value) => {
+    if (/^[0-9]?$/.test(value)) {
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
+
+      if (value && index < 3) {
+        inputRefs.current[index + 1].focus();
+      }
+    }
+  };
+
+  const handleKeyDown = (index, e) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1].focus();
+    }
+  };
+
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
     if (otp.some((digit) => digit === "")) {
       enqueueSnackbar("Please fill all OTP fields", { variant: "error" });
       return;
-    } else {
-      navigate("/reset");
     }
-
-    mutate(
-      { otp: otp.join("") },
-      {
-        onSuccess: (res) => {
-          if (res.status !== "error") {
-            enqueueSnackbar("Verification successful", { variant: "success" });
-            navigate("/dashboard");
-          } else {
-            enqueueSnackbar(res.message, { variant: "error" });
-          }
-        },
-      }
-    );
+  
+    const otpValue = otp.join("");
+  
+    if (/^\d{4}$/.test(otpValue)) {
+      setFakeLoading(true);
+      setTimeout(() => {
+        enqueueSnackbar("Verification successful", { variant: "success" });
+        navigate("/dashboard");
+        setFakeLoading(false);
+      }, 1500); 
+    } else {
+      enqueueSnackbar("Invalid OTP", { variant: "error" });
+    }
   };
+  
 
   return (
     <Container>
@@ -90,18 +124,37 @@ const VerifyOtp = () => {
       </Typography>
 
       <form onSubmit={handleSubmit}>
-        <Box sx={{ margin: "20px 0px 20px 0px" }}>
-          <TextInput placeholder="enter otp sent" id="otp" />
-        </Box>
+        <OtpInputContainer>
+          {otp.map((digit, index) => (
+            <OtpInput
+              key={index}
+              type="text"
+              value={digit}
+              onChange={(e) => handleOtpChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              inputRef={(el) => (inputRefs.current[index] = el)}
+              maxLength={1}
+              autoFocus={index === 0}
+            />
+          ))}
+        </OtpInputContainer>
 
         <Button
           variant="contained"
           type="submit"
           sx={{ width: "100%" }}
-          disabled={isPending}
+          disabled={fakeLoading}
         >
           Verify
-        </Button>
+          {fakeLoading && (
+            <CircularProgress
+              size={18}
+              color="primary"
+              style={{ marginLeft: "10px" }}
+    />
+  )}
+</Button>
+
       </form>
 
       <Typography variant="h5" sx={{ margin: "20px 40px" }}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Table,
@@ -8,13 +8,58 @@ import {
   TableHead,
   TableRow,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { ReloadIcon } from "assets/Icons/ReloadIcon";
 import AdminDetailsMenu from "./components/AdminDetailsMenu";
 import { SummaryDetails } from "../summaryDetails/SummaryDetails";
-import { useGetTeams } from "api/teammates";
 
 const itemPerPage = 5;
+
+const mockTeams = [
+  {
+    id: 1,
+    fullname: "Jane Doe",
+    email: "jane.doe@example.com",
+    roles: "Admin",
+    status: "Active",
+  },
+  {
+    id: 2,
+    fullname: "John Smith",
+    email: "john.smith@example.com",
+    roles: "Editor",
+    status: "Invite sent",
+  },
+  {
+    id: 3,
+    fullname: "Emily White",
+    email: "emily.white@example.com",
+    roles: "Viewer",
+    status: "Resend invite",
+  },
+  {
+    id: 4,
+    fullname: "Michael Brown",
+    email: "michael.brown@example.com",
+    roles: "Admin",
+    status: "Active",
+  },
+  {
+    id: 5,
+    fullname: "Lisa Green",
+    email: "lisa.green@example.com",
+    roles: "Editor",
+    status: "Invite sent",
+  },
+  {
+    id: 6,
+    fullname: "James Black",
+    email: "james.black@example.com",
+    roles: "Viewer",
+    status: "Resend invite",
+  },
+];
 
 // Row Component
 function Row({ row, onOpenDetails }) {
@@ -54,10 +99,17 @@ function Row({ row, onOpenDetails }) {
 
 // Main AdminTable Component
 export default function AdminTable() {
-  const { data } = useGetTeams();
-  const teams = data?.data?.teams || [];
+  const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTeamMate, setSelectedTeamMate] = useState(null);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setTeams(mockTeams);
+      setLoading(false);
+    }, 1500); 
+  }, []);
 
   const totalPages = Math.ceil(teams.length / itemPerPage);
   const paginatedTeams = teams.slice(currentPage * itemPerPage, (currentPage + 1) * itemPerPage);
@@ -67,7 +119,6 @@ export default function AdminTable() {
   };
 
   const handleRoleChange = (updatedTeamMate) => {
-    // Implement role change logic as per your requirements
     console.log("Role updated for:", updatedTeamMate);
   };
 
@@ -80,91 +131,96 @@ export default function AdminTable() {
         handleRoleChange={handleRoleChange}
       />
 
-      <TableContainer component={Box}>
-        <Table aria-label="admin table">
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ paddingLeft: "70px" }}>Fullname</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedTeams.map((row) => (
-              <Row
-                key={row.id}
-                row={row}
-                onOpenDetails={() => setSelectedTeamMate(row)}
-              />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <Box
-        sx={{
-          display: "flex",
-          paddingBottom: "100px",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginTop: "20px",
-          marginRight: "30px",
-        }}
-      >
-        <Typography variant="h5">
-          {`${currentPage * itemPerPage + 1}-${Math.min(
-            (currentPage + 1) * itemPerPage,
-            teams.length
-          )} of ${teams.length}`}
-        </Typography>
-
-        <Box sx={{ display: "flex", gap: "10px" }}>
-          {/* Prev Button */}
-          <Typography
-            variant="h5"
-            sx={{
-              padding: "8px 20px",
-              cursor: currentPage > 0 ? "pointer" : "not-allowed",
-              background: currentPage > 0 ? "none" : "#f2f2f2",
-              borderRadius: "6px",
-              "&:hover": { background: currentPage > 0 ? "#F2F4F4" : "none" },
-            }}
-            onClick={() => handlePageChange(currentPage - 1)}
-          >
-            Prev
-          </Typography>
-
-          {/* Active Page Number */}
-          <Typography
-            variant="h5"
-            sx={{
-              padding: "8px 20px",
-              background: "#E0E0E0",
-              borderRadius: "6px",
-              fontWeight: "bold",
-            }}
-          >
-            Page {currentPage + 1}
-          </Typography>
-
-          {/* Next Button */}
-          <Typography
-            variant="h5"
-            sx={{
-              padding: "8px 20px",
-              cursor: currentPage < totalPages - 1 ? "pointer" : "not-allowed",
-              background: currentPage < totalPages - 1 ? "none" : "#f2f2f2",
-              borderRadius: "6px",
-              "&:hover": { background: currentPage < totalPages - 1 ? "#F2F4F4" : "none" },
-            }}
-            onClick={() => handlePageChange(currentPage + 1)}
-          >
-            Next
-          </Typography>
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", padding: "100px 0" }}>
+          <CircularProgress />
         </Box>
-      </Box>
+      ) : (
+        <TableContainer component={Box}>
+          <Table aria-label="admin table">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ paddingLeft: "70px" }}>Fullname</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Role</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedTeams.map((row) => (
+                <Row
+                  key={row.id}
+                  row={row}
+                  onOpenDetails={() => setSelectedTeamMate(row)}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+
+      {!loading && (
+        <Box
+          sx={{
+            display: "flex",
+            paddingBottom: "100px",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: "20px",
+            marginRight: "30px",
+          }}
+        >
+          <Typography variant="h5">
+            {`${currentPage * itemPerPage + 1}-${Math.min(
+              (currentPage + 1) * itemPerPage,
+              teams.length
+            )} of ${teams.length}`}
+          </Typography>
+
+          <Box sx={{ display: "flex", gap: "10px" }}>
+            <Typography
+              variant="h5"
+              sx={{
+                padding: "8px 20px",
+                cursor: currentPage > 0 ? "pointer" : "not-allowed",
+                background: currentPage > 0 ? "none" : "#f2f2f2",
+                borderRadius: "6px",
+                "&:hover": { background: currentPage > 0 ? "#F2F4F4" : "none" },
+              }}
+              onClick={() => handlePageChange(currentPage - 1)}
+            >
+              Prev
+            </Typography>
+
+            <Typography
+              variant="h5"
+              sx={{
+                padding: "8px 20px",
+                background: "#E0E0E0",
+                borderRadius: "6px",
+                fontWeight: "bold",
+              }}
+            >
+              Page {currentPage + 1}
+            </Typography>
+
+            <Typography
+              variant="h5"
+              sx={{
+                padding: "8px 20px",
+                cursor: currentPage < totalPages - 1 ? "pointer" : "not-allowed",
+                background: currentPage < totalPages - 1 ? "none" : "#f2f2f2",
+                borderRadius: "6px",
+                "&:hover": { background: currentPage < totalPages - 1 ? "#F2F4F4" : "none" },
+              }}
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              Next
+            </Typography>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,19 +9,35 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
 import TransactDetails from './TransactDetails';
-import { useGetTransactions } from 'api/transactions';
 
 const itemsPerPage = 4;
 
 export default function DashboardTable() {
-  const { data, isLoading, isError } = useGetTransactions();
-  const transactions = data?.data?.transactions || [];
-  console.log("API call response:", data);
+  // const { data, isLoading, isError } = useGetTransactions();
+  // const transactions = data?.data?.transactions || [];
+  const [transactions, setTransaction] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [currentPage, setCurrentPage] = useState(0);
+
+
+  useEffect(() => {
+    setTimeout(() => {
+      const transactions = Array.from({ length: 12 }, (_, index) => ({
+        id: index + 1,
+        businessName: `Business ${index + 1}`,
+        amount: Math.floor(Math.random() * 10000) + 1000,
+        transId: `TXN${100000 + index}`,
+        createdOn: new Date(Date.now() - index * 86400000).toLocaleString(),
+      }));
+      setTransaction(transactions)
+      setIsLoading(false)
+    }, 1000);
+   return clearTimeout
+  }, [])
+  
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
-  console.log("Transactions:", transactions);
 
   // Function to handle page navigation
   const handlePageChange = (newPage) => {
@@ -46,22 +62,7 @@ export default function DashboardTable() {
     );
   }
 
-  // if (isError) {
-  //   return (
-  //     <Alert severity="error" sx={{ width:"95%", textAlign: 'center', marginTop: '20px' }}>
-  //       Error fetching transactions. Please try again later.
-  //     </Alert>
-  //   );
-  // }
-
-  // if (transactions.length === 0) {
-  //   console.error('No transactions found');
-  //   return (
-  //     <Typography variant="h6" sx={{ textAlign: 'center', marginTop: '20px' }}>
-  //       No transactions available.
-  //     </Typography>
-  //   );
-  // }
+ 
 
   return (
     <Box sx={{ width: '95%', marginTop: '50px' }}>

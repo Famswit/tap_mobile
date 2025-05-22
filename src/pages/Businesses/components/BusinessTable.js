@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -15,11 +15,17 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 const itemsPerPage = 5;
 
-export function BusinessTable({onGenerateApiKey }) {
-  const {data, isLoading, isError} = useGETBusinesses();
-  const businesses = data?.data?.businesses || [];
-  console.log(data);
+export function BusinessTable({ businesses = [], onGenerateApiKey }) {
+  // const {data, isLoading, isError} = useGETBusinesses();
+  // const businesses = data?.data?.businesses || [];
+  // console.log(data);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setIsLoading(false), 500); // simulate short loading
+    return () => clearTimeout(timeout);
+  }, []);
   
   const totalPages = Math.ceil(businesses.length / itemsPerPage);
 
@@ -57,10 +63,10 @@ export function BusinessTable({onGenerateApiKey }) {
             {currentData.map((row) => (
               <TableRow key={row.id}>
                 <TableCell padding="checkbox"><Checkbox /></TableCell>
-                <TableCell>{row.name}</TableCell>
-                <TableCell align="right">{row.category}</TableCell>
-                <TableCell align="right">{row.contactEmail}</TableCell>
-                <TableCell align="right">{row.createdOn}</TableCell>
+                <TableCell>{row.businessName}</TableCell>
+                <TableCell align="right">{row.businessCategory}</TableCell>
+                <TableCell align="right">{row.businessEmail}</TableCell>
+                <TableCell align="right">{row.dateAdded}</TableCell>
                 <TableCell align="right">
                   <BusinessMenuOption business={row} 
                   onGenerateApiKey={onGenerateApiKey}/>

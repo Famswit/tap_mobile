@@ -1,6 +1,6 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { Typography, Button, CircularProgress } from "@mui/material";
+import { Typography, Button, CircularProgress, ButtonBase } from "@mui/material";
 
 import { NoticeIcon } from "assets/Icons/NoticeIcon";
 import { TextInput } from "components/TextInput";
@@ -8,9 +8,11 @@ import { resetAPIValidation } from "schema/resetAPIValidation";
 import { useFormik } from "formik";
 import { useSnackbar } from "notistack";
 import { useResetAPI } from "api/business";
+import { useNavigate } from "react-router-dom";
 
-export function ResetApiKey({ handleClose, business }) {
-  const token = ""
+export function ResetApiKey({ handleOpenCopyApiKey}) {
+  const token = "";
+  const navigate = useNavigate()
   const { mutate, isPending } = useResetAPI(token);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -23,6 +25,8 @@ export function ResetApiKey({ handleClose, business }) {
       validationSchema: resetAPIValidation,
 
       onSubmit: (values) => {
+        enqueueSnackbar("Reset Successful", { variant: "success" });
+        sessionStorage.setItem("token", "mock-token");
         mutate(
           { data: { resetReason: values.resetReason, password: values.password } },
           {
@@ -39,6 +43,8 @@ export function ResetApiKey({ handleClose, business }) {
             },
           }
         );
+        setTimeout(() => navigate("/business"), 1000);
+
       },
     });
   return (
@@ -107,7 +113,7 @@ export function ResetApiKey({ handleClose, business }) {
       <Button
         variant="contained"
         disabled={isPending}
-        onClick={handleSubmit}
+        onClick={handleSubmit }
         sx={{ marginTop: "60px", width: "100%", padding: "15px" }}
       >
         <Typography variant="h4"> Reset API Key</Typography>
