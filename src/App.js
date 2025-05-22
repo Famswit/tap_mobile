@@ -15,8 +15,8 @@ import { Team } from "pages/Administration/Team/Team";
 import { Roles } from "pages/Administration/Roles/Roles";
 import Layout from "components/Layout/Layout";
 import { useAuthContext } from "context/AuthContext";
-import { RequestOtp } from "pages/2FA/RequestOtp";
 import VerifyOtp from "pages/2FA/VerifyOtp";
+import { RequestOtp } from "pages/2FA/RequestOtp";
 
 function App() {
   const { isLoggedIn } = useAuthContext();
@@ -24,8 +24,6 @@ function App() {
   const unauthenticatedRoutes = (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/request-otp" element={<RequestOtp />} />
-      <Route path="/verify-otp" element={<VerifyOtp />} />
       <Route path="/forget" element={<ForgetPassword />} />
       <Route path="/check" element={<CheckMail />} />
       <Route path="/reset" element={<ResetPassword />} />
@@ -35,6 +33,8 @@ function App() {
 
   const authenticatedRoute = (
     <Routes>
+      <Route path="/request-otp" element={<RequestOtp />} />
+      <Route path="/verify-otp" element={<VerifyOtp />} />
       <Route element={<Layout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/transactions">

@@ -3,7 +3,6 @@ import {
   Button,
   Typography,
   Avatar,
-  Link,
   Box,
   ListItemText,
 } from "@mui/material";
@@ -14,18 +13,16 @@ import { LogoutIcon } from "assets/Icons/LogoutIcon";
 import { MenuListitemContainer } from "./NavItem";
 
 export default function Logout() {
-
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-
   const handleLogout = () => {
     sessionStorage.removeItem('token');
     setIsLoggedIn(false);
-    window.location.reload()
+    window.location.reload();
   };
 
   return (
@@ -36,7 +33,12 @@ export default function Logout() {
       </MenuListitemContainer>
 
       <Modal open={open} handleClose={handleClose}>
-        <Box sx={{ width: "412px", height: "364px" }}>
+        <Box
+          sx={{
+            width: { xs: "300px", sm: "320px", md: "412px" }, 
+            height: { xs: "300px", sm: "320px", md: "364px" }, 
+          }}
+        >
           <Box
             sx={{
               display: "flex",
@@ -77,8 +79,8 @@ export default function Logout() {
           </Button>
 
           <Button
-          onClick={handleClose}
-            to = "#"
+            onClick={handleClose}
+            to="#"
             variant="outlined"
             sx={{
               width: "100%",

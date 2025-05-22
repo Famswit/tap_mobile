@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Table,
@@ -10,9 +10,8 @@ import {
   Typography,
   CircularProgress,
 } from "@mui/material";
-import { useGetActivityLog } from "api/activity";
 
-const itemPerPage = 7;
+const itemPerPage = 5;
 
 const headCells = [
   { id: "name", label: "NAME" },
@@ -36,8 +35,23 @@ function EnhancedTableHead() {
 
 export default function ActivityTable() {
   const [currentPage, setCurrentPage] = useState(0);
-  const { data, isLoading, isError } = useGetActivityLog();
-  const activityLogs = data?.data?.activityLogs || [];
+  const [activityLogs, setActivityLogs] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate data fetching
+    setTimeout(() => {
+      setActivityLogs(
+        Array.from({ length: 24 }, (_, i) => ({
+          id: i + 1,
+          name: `User ${i + 1}`,
+          description: `Performed action #${i + 1}`,
+          createdOn: new Date(Date.now() - i * 3600000).toISOString(),
+        }))
+      );
+      setIsLoading(false);
+    }, 1500);
+  }, []);
 
   const numberOfPages = Math.ceil(activityLogs.length / itemPerPage);
   const paginatedLogs = activityLogs.slice(
@@ -45,7 +59,6 @@ export default function ActivityTable() {
     (currentPage + 1) * itemPerPage
   );
 
-  console.log(paginatedLogs)
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -57,7 +70,6 @@ export default function ActivityTable() {
       </Box>
     );
   }
-
 
   return (
     <Box sx={{ width: "95%", marginTop: "50px" }}>
@@ -82,19 +94,29 @@ export default function ActivityTable() {
         </Table>
       </TableContainer>
 
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "20px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          paddingBottom: "100px",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: "20px",
+          marginRight: "30px",
+        }}
+      >
         <Typography variant="h5">
           {`${currentPage * itemPerPage + 1}-${Math.min(
             (currentPage + 1) * itemPerPage,
             activityLogs.length
           )} of ${activityLogs.length}`}
         </Typography>
+
         <Box sx={{ display: "flex", gap: "10px" }}>
           <Typography
             variant="h5"
             sx={{
-              cursor: currentPage > 0 ? "pointer" : "not-allowed",
               padding: "8px 20px",
+              cursor: currentPage > 0 ? "pointer" : "not-allowed",
               background: currentPage > 0 ? "none" : "#f2f2f2",
               borderRadius: "6px",
               "&:hover": { background: currentPage > 0 ? "#F2F4F4" : "none" },
@@ -104,29 +126,23 @@ export default function ActivityTable() {
             Prev
           </Typography>
 
-          {Array.from({ length: numberOfPages }, (_, i) => i).map((page) => (
-            <Typography
-              key={page}
-              variant="h5"
-              sx={{
-                padding: "8px 20px",
-                background: currentPage === page ? "#E0E0E0" : "none",
-                borderRadius: "6px",
-                fontWeight: currentPage === page ? "bold" : "normal",
-                cursor: "pointer",
-                "&:hover": { background: "#F2F4F4" },
-              }}
-              onClick={() => handlePageChange(page)}
-            >
-              Page {page + 1}
-            </Typography>
-          ))}
+          <Typography
+            variant="h5"
+            sx={{
+              padding: "8px 20px",
+              background: "#E0E0E0",
+              borderRadius: "6px",
+              fontWeight: "bold",
+            }}
+          >
+            Page {currentPage + 1}
+          </Typography>
 
           <Typography
             variant="h5"
             sx={{
-              cursor: currentPage < numberOfPages - 1 ? "pointer" : "not-allowed",
               padding: "8px 20px",
+              cursor: currentPage < numberOfPages - 1 ? "pointer" : "not-allowed",
               background: currentPage < numberOfPages - 1 ? "none" : "#f2f2f2",
               borderRadius: "6px",
               "&:hover": { background: currentPage < numberOfPages - 1 ? "#F2F4F4" : "none" },

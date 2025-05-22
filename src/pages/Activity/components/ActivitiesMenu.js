@@ -12,7 +12,7 @@ import { ActbuttonIcon } from '../../../assets/Icons/ActbuttonIcon';
 
 export const DateButton = styled(Button)({
   marginTop:"35px",
-  width: "169px",
+  width: "210px",
   height: "48px",
   backgroundColor: "#fff",
   textAlign:"center",

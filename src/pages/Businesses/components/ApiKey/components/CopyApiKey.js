@@ -11,7 +11,7 @@ import { useState } from "react";
 const generateFakeAPIKey = () => {
   // Create a random string with uppercase, lowercase, and numbers
   return (
-    "sk-" + // Prefix for the key
+    "sk-" + 
     Array.from({ length: 32 }, () =>
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".charAt(
         Math.floor(Math.random() * 62)
@@ -20,19 +20,18 @@ const generateFakeAPIKey = () => {
   );
 };
 
-export const CopyApiKey = ({ textToCopy, business, handleOpenResetApiKey }) => {
+export const CopyApiKey = ({  business, handleOpenResetApiKey }) => {
   const { enqueueSnackbar } = useSnackbar();
   const [fakeApiKey] = useState(generateFakeAPIKey()); // Generate API key
 
 
-  const { data, isLoading, isError } = useCopyAPIKey(business?.businessId);
+  const { data, isLoading } = useCopyAPIKey(business?.businessId);
 
   console.log(data)
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  //if (isError) return <div>Error fetching data</div>;
   const handleCopyText = async () => {
     const apiKey = data?.data?.apiKey?.apiKey;
     if(fakeApiKey){

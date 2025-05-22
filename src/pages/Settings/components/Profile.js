@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-import { Box, Stack, Typography, Button } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 
-
-
-// Sample function to generate fake profile data
 const generateFakeProfile = () => {
   return {
     fullname: "APX Enterprise",
@@ -33,60 +30,118 @@ export const Profile = () => {
   const profile = data?.data?.profile;
 
   if (isLoading) return <div>Loading...</div>;
- // if (isError) return <div>Error fetching data</div>;
+  // if (isError) return <div>Error fetching data</div>;
 
   return (
-    <Stack spacing={3} sx={{ margin: "-10px 30px" }}>
+    <Stack
+      spacing={3}
+      sx={{
+        margin: { xs: "0 10px", sm: "-10px 20px", md: "-10px 30px" }, 
+      }}
+    >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <Box>
-          <Typography variant="h4" sx={{ marginBottom: '5px' }}>Full Name</Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              marginBottom: '5px',
+              fontSize: { xs: '1rem', sm: '1.1rem', md: '1.1rem', lg:'0.9rem' },
+            }}
+          >
+            Full Name
+          </Typography>
           <Box
             sx={{
               color: "#000",
               borderRadius: "3px",
-              height: "48px",
-              width: "500px",
+              height: { xs: "40px", sm: "44px", md: "48px" }, 
+              width: { xs: "90%", sm: "90%", md: "500px" }, 
               border: "1px solid #EBEDEF",
               background: "#fff",
+              display: "flex",
+              alignItems: "center",
             }}
           >
-            <Typography variant="h4" style={{ margin: '15px 20px' }}>{profile?.fullname || 'No data'}</Typography>
+            <Typography
+              variant="h4"
+              sx={{
+                margin: { xs: '0 10px', sm: '0 15px', md: '15px 20px' }, 
+                fontSize: { xs: '0.9rem', sm: '1rem', md: '1rem' }, 
+              }}
+            >
+              {profile?.fullname || 'No data'}
+            </Typography>
           </Box>
         </Box>
         
         <Box>
-          <Typography variant="h4" sx={{ marginBottom: '5px' }}>Email Address</Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              marginBottom: '5px',
+              fontSize: { xs: '1rem', sm: '1.1rem', md: '1rem', lg:'0.9rem' },
+            }}
+          >
+            Email Address
+          </Typography>
           <Box
             sx={{
               color: "#000",
               borderRadius: "3px",
-              height: "48px",
-              width: "100%",
+              height: { xs: "40px", sm: "44px", md: "48px" },
+              width: { xs: "90%", sm: "90%", md: "500px" }, 
               border: "1px solid #EBEDEF",
               background: "#fff",
+              display: "flex",
+              alignItems: "center",
             }}
           >
-            <Typography variant="h4" style={{ margin: '15px 20px' }}>{profile?.email || 'No data'}</Typography>
+            <Typography
+              variant="h4"
+              sx={{
+                margin: { xs: '0 10px', sm: '0 15px', md: '15px 20px' },
+                fontSize: { xs: '0.9rem', sm: '1rem', md: '1rem' },
+              }}
+            >
+              {profile?.email || 'No data'}
+            </Typography>
           </Box>
         </Box>
 
         <Box>
-          <Typography variant="h4" sx={{ marginBottom: '5px' }}>Role</Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              marginBottom: '5px',
+              fontSize: { xs: '1rem', sm: '1.1rem', md: '1rem', lg:'0.9rem' },
+            }}
+          >
+            Role
+          </Typography>
           <Box
             sx={{
               color: "#000",
               borderRadius: "3px",
-              height: "48px",
-              width: "100%",
+              height: { xs: "40px", sm: "44px", md: "48px" },
+              width: { xs: "90%", sm: "90%", md: "500px" }, 
               border: "1px solid #EBEDEF",
               background: "#fff",
+              display: "flex",
+              alignItems: "center",
             }}
           >
-            <Typography variant="h4" style={{ margin: '15px 20px' }}>{profile?.createdBy || 'No data'}</Typography>
+            <Typography
+              variant="h4"
+              sx={{
+                margin: { xs: '0 10px', sm: '0 15px', md: '15px 20px' },
+                fontSize: { xs: '0.9rem', sm: '1rem', md: '1rem' },
+              }}
+            >
+              {profile?.createdBy || 'No data'}
+            </Typography>
           </Box>
         </Box>
       </Box>
     </Stack>
   );
 };
-

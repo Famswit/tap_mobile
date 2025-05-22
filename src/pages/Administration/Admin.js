@@ -14,11 +14,11 @@ const AdminDropdownNav = () => {
 
   const handleSubItemClick = (index) => {
     setActiveIndex(index);
-    setOpen(true); // Ensure dropdown stays open when a sub-item is clicked
+    setOpen(true); 
   };
 
   const handleNavItemClick = (index) => {
-    setActiveIndex(index); // Reset activeIndex when a navigation item is clicked
+    setActiveIndex(index); 
   };
 
   return (
@@ -50,7 +50,6 @@ const AdminDropdownNav = () => {
           >
             <ListItemText primary="Sub Item 2" />
           </ListItem>
-          {/* Add more sub items here as needed */}
         </List>
       </Collapse>
       <ListItem
@@ -58,7 +57,6 @@ const AdminDropdownNav = () => {
         selected={activeIndex === 3}
         onClick={() => handleClick(3)}
         style={{ backgroundColor: activeIndex === 3 ? '#e0e0e0' : 'inherit' }}
-        onClick={() => handleNavItemClick(3)} // Reset activeIndex when a navigation item is clicked
       >
         <ListItemText primary="Dropdown Item 2" />
       </ListItem>
@@ -67,11 +65,9 @@ const AdminDropdownNav = () => {
         selected={activeIndex === 4}
         onClick={() => handleClick(4)}
         style={{ backgroundColor: activeIndex === 4 ? '#e0e0e0' : 'inherit' }}
-        onClick={() => handleNavItemClick(4)} // Reset activeIndex when a navigation item is clicked
       >
         <ListItemText primary="Dropdown Item 3" />
       </ListItem>
-      {/* Add more dropdown items here as needed */}
     </List>
   );
 };

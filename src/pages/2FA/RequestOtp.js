@@ -64,11 +64,7 @@ export const RequestOtp = (data) => {
       },
     });
 
-  // const handleSubmit = () => {
-  //   if (!errors.email && values.email) {
-  //     navigate("/check"); // Navigate if no validation errors
-  //   }
-  // }
+
   return (
     <Container>
       <Typography variant="h1">Request account otp</Typography>
@@ -102,6 +98,7 @@ export const RequestOtp = (data) => {
           variant="contained"
           sx={{ marginTop: "30px", width: "100%" }}
           disabled={isPending}
+          onClick={handleSubmit}
         >
           submit
           {isPending && (

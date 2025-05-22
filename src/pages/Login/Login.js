@@ -28,43 +28,32 @@ export const Login = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  // ✅ Dummy user credentials for login
-  const DUMMY_USER = {
-    email: "testuser@example.com",
-    password: "password123",
-    token: "fake-jwt-token-12345",
-  };
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+  } = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: validationLogin,
+    onSubmit: (values) => {
+      setIsLoading(true);
 
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-    useFormik({
-      initialValues: {
-        email: "",
-        password: "",
-      },
-      validationSchema: validationLogin,
-
-      onSubmit: (values) => {
-        setIsLoading(true);
-
-        setTimeout(() => {
-          if (
-            values.email === DUMMY_USER.email &&
-            values.password === DUMMY_USER.password
-          ) {
-            sessionStorage.setItem("token", DUMMY_USER.token);
-            authCtx.toggleAuth();
-            enqueueSnackbar("Login Successful", { variant: "success" });
-
-            // ✅ Redirect to dashboard after login
-            navigate("/request-otp");
-          } else {
-            enqueueSnackbar("Invalid email or password", { variant: "error" });
-          }
-
-          setIsLoading(false);
-        }, 1500); // Simulate a delay (fake API response)
-      },
-    });
+      setTimeout(() => {
+        const fakeToken = "fake-jwt-token-12345";
+        authCtx.toggleAuth();
+        sessionStorage.setItem("token", fakeToken);
+        enqueueSnackbar("Login Successful", { variant: "success" });
+        navigate("/request-otp"); // ✅ Moved here
+        setIsLoading(false);
+      }, 1500);
+    },
+  });
 
   return (
     <Container>

@@ -33,12 +33,25 @@ export const ExportButton = styled(Button)({
   },
 });
 
-// Styled Link
 export const LinkStyles = styled(Link)({
   color: "#fff",
   textDecoration: "none",
   width: "100%",
 });
+
+const ActionBox = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  gap: "10px",
+  marginTop: "-40px",
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "row", 
+    marginTop: "50px",
+    width: "100%", 
+    justifyContent: "space-between", 
+    marginLeft:"-350px"
+  },
+}));
 
 export function Businesses() {
   const generateFakeData = () => {
@@ -100,7 +113,7 @@ export function Businesses() {
               />
             </Box>
           </Box>
-          <Box sx={{ marginTop: "-40px", display: "flex", gap: "20px" }}>
+          <ActionBox sx={{ marginTop: "-40px", display: "flex", gap: "20px" }}>
             <AddBusiness onAddBusiness={handleAddBusiness} />
             <ExportButton variant="contained">
               <LinkStyles
@@ -119,7 +132,7 @@ export function Businesses() {
                 <Typography>Export csv</Typography>
               </LinkStyles>
             </ExportButton>
-          </Box>
+          </ActionBox>
         </Box>
       </Box>
 
